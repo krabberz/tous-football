@@ -26,7 +26,6 @@ body {
 
 .hidden { display: none !important; }
 
-/* Flag Grid (Page 1) */
 .flag-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -51,7 +50,6 @@ body {
   margin-bottom: 0.5rem;
 }
 
-/* League Steps (Page 2) */
 .league-grid {
   display: flex;
   justify-content: center;
@@ -78,7 +76,6 @@ body {
   margin-bottom: 0.5rem;
 }
 
-/* 3-Column Layouts (Page 3 & Page 4) */
 .three-col-layout, .team-bottom-row {
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
@@ -93,7 +90,6 @@ body {
   min-height: 300px;
 }
 
-/* Team Page Top Row */
 .team-top-row {
   display: grid;
   grid-template-columns: 200px 1fr;

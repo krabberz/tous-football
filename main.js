@@ -4,101 +4,121 @@ const COUNTRIES = [
   { id: 'germany', name: 'Germany' },
   { id: 'sweden', name: 'Sweden' },
   { id: 'indonesia', name: 'Indonesia' },
-  { id: 'føroyar', name: 'Faroe Islands' }
+  { id: 'faroe', name: 'Faroe Islands' }
 ]
 
 const LEAGUES_BY_COUNTRY = {
   england: {
-    level1: [{ id: 'pl', name: 'Premier League' }],
-    level2: [{ id: 'efl-c', name: 'EFL Championship' }],
-    level3: [{ id: 'efl-lo', name: 'EFL League One' }],
-    level4: [{ id: 'efl-lt', name: 'EFL League Two' }],
-    level5: [{ id: 'nl', name: 'National League' }],
+    level1: [
+      { id: 'pl', name: 'Premier League'}
+    ],
+    level2: [
+      { id: 'efl-c', name: 'EFL Championship', promotesTo: ['pl']}
+    ],
+    level3: [
+      { id: 'efl-lo', name: 'EFL League One', promotesTo: ['efl-c']}
+    ],
+    level4: [
+      { id: 'efl-lt', name: 'EFL League Two', promotesTo: ['efl-lo']}
+    ],
+    level5: [
+      { id: 'nl', name: 'National League', promotesTo: ['efl-lt']}
+    ],
     level6: [
-      { id: 'nl-n', name: 'National League North' },
-      { id: 'nl-s', name: 'National League South' }
+      { id: 'nl-n', name: 'National League North', promotesTo: ['nl']},
+      { id: 'nl-s', name: 'National League South', promotesTo: ['nl']}
     ],
     level7: [
-      { id: 'npl-pd', name: 'Northern Premier League Premier Division' },
-      { id: 'sl-pd-c', name: 'Southern League Premier Division Central' },
-      { id: 'sl-pd-s', name: 'Southern League Premier Division South' },
-      { id: 'il-pd', name: 'Isthmian League Premier Division' }
+      { id: 'npl-pd', name: 'Northern Premier League Premier Division', promotesTo: ['nl-n']},
+      { id: 'sl-pd-c', name: 'Southern League Premier Division Central', promotesTo: ['nl-n']},
+      { id: 'sl-pd-s', name: 'Southern League Premier Division South', promotesTo: ['nl-s']},
+      { id: 'il-pd', name: 'Isthmian League Premier Division', promotesTo: ['nl-s']}
     ],
     level8: [
-      { id: 'npl-do-e', name: 'Northern Premier League Division One East' },
-      { id: 'npl-do-w', name: 'Northern Premier League Division One West' },
-      { id: 'npl-do-m', name: 'Northern Premier League Division One Midlands' },
-      { id: 'sl-do-c', name: 'Southern League Division One Central' },
-      { id: 'il-do-sc', name: 'Isthmian League Division One South Central' },
-      { id: 'il-do-n', name: 'Isthmian League Division One North' },
-      { id: 'il-do-se', name: 'Isthmian League Division One South East' }
+      { id: 'npl-do-e', name: 'Northern Premier League Division One East', promotesTo: ['npl-pd']},
+      { id: 'npl-do-w', name: 'Northern Premier League Division One West', promotesTo: ['npl-pd']},
+      { id: 'npl-do-m', name: 'Northern Premier League Division One Midlands', promotesTo: ['sl-pd-c']},
+      { id: 'sl-do-c', name: 'Southern League Division One Central', promotesTo: ['sl-pd-c']},
+      { id: 'sl-do-s', name: 'Southern League Division One South', promotesTo: ['sl-pd-s']},
+      { id: 'il-do-sc', name: 'Isthmian League Division One South Central', promotesTo: ['sl-pd-s']},
+      { id: 'il-do-n', name: 'Isthmian League Division One North', promotesTo: ['il-pd']},
+      { id: 'il-do-se', name: 'Isthmian League Division One South East', promotesTo: ['il-pd']}
     ]
   },
   france: {
-    level1: [{ id: 'lu', name: 'Ligue 1' }],
-    level2: [{ id: 'ld', name: 'Ligue 2' }],
-    level3: [{ id: 'lt', name: 'National 1' }],
-    level4: [
-      { id: 'nu-a', name: 'National 2 Group A' },
-      { id: 'nu-b', name: 'National 2 Group B' },
-      { id: 'nu-c', name: 'National 2 Group C' }
+    level1: [
+      { id: 'lu', name: 'Ligue 1' } 
     ],
-    level5: [
-      { id: 'nd-a', name: 'National 3 Group A' },
-      { id: 'nd-b', name: 'National 3 Group B' },
-      { id: 'nd-c', name: 'National 3 Group C' },
-      { id: 'nd-d', name: 'National 3 Group D' },
-      { id: 'nd-e', name: 'National 3 Group E' },
-      { id: 'nd-f', name: 'National 3 Group F' },
-      { id: 'nd-g', name: 'National 3 Group G' },
-      { id: 'nd-h', name: 'National 3 Group H' }
+    level2: [
+      { id: 'ld', name: 'Ligue 2', promotesTo: ['lu']}
+    ],
+    level3: [
+      { id: 'lt', name: 'National 1', promotesTo: ['ld']}
+    ],
+    level4: [
+      { id: 'nu-a', name: 'National 2 Group A', promotesTo: ['lt']},
+      { id: 'nu-b', name: 'National 2 Group B', promotesTo: ['lt']},
+      { id: 'nu-c', name: 'National 2 Group C', promotesTo: ['lt']}
     ]
   },
   germany: {
-    level1: [{ id: 'e-bl', name: '1. Bundesliga' }],
-    level2: [{ id: 'z-bl', name: '2. Bundesliga' }],
-    level3: [{ id: 'd-l', name: '3. Liga' }],
+    level1: [
+      { id: 'e-bl', name: '1. Bundesliga' }
+    ],
+    level2: [
+      { id: 'z-bl', name: '2. Bundesliga', promotesTo: ['e-bl']}
+    ],
+    level3: [
+      { id: 'd-l', name: '3. Liga', promotesTo: ['z-bl']}
+    ],
     level4: [
-      { id: 'rl-n', name: 'Regionalliga Nord' },
-      { id: 'rl-no', name: 'Regionalliga Nordost' },
-      { id: 'rl-w', name: 'Regionalliga West' },
-      { id: 'rl-sw', name: 'Regionalliga Südwest' },
-      { id: 'rl-b', name: 'Regionalliga Bayern' }
+      { id: 'rl-n', name: 'Regionalliga Nord', promotesTo: ['d-l']},
+      { id: 'rl-no', name: 'Regionalliga Nordost', promotesTo: ['d-l']},
+      { id: 'rl-w', name: 'Regionalliga West', promotesTo: ['d-l']},
+      { id: 'rl-sw', name: 'Regionalliga Südwest', promotesTo: ['d-l']},
+      { id: 'rl-b', name: 'Regionalliga Bayern', promotesTo: ['d-l']}
     ]
   },
   sweden: {
-    level1: [{ id: 'as', name: 'Allsvenskan' }],
-    level2: [{ id: 'se', name: 'Superettan' }],
+    level1: [
+      { id: 'as', name: 'Allsvenskan' }
+    ],
+    level2: [
+      { id: 'se', name: 'Superettan', promotesTo: ['as']}
+    ],
     level3: [
-      { id: 'e-n', name: 'Ettan Norra' },
-      { id: 'e-s', name: 'Ettan Södra' }
+      { id: 'e-n', name: 'Ettan Norra', promotesTo: ['se']},
+      { id: 'e-s', name: 'Ettan Södra', promotesTo: ['se']}
     ],
     level4: [
-      { id: 'dt-n', name: 'Division 2 Norrland' },
-      { id: 'dt-ns', name: 'Division 2 Norra Svealand' },
-      { id: 'dt-ss', name: 'Division 2 Södra Svealand' },
-      { id: 'dt-ng', name: 'Division 2 Norra Götaland' },
-      { id: 'dt-vg', name: 'Division 2 Västra Götaland' },
-      { id: 'dt-sg', name: 'Division 2 Södra Götaland' }
+      { id: 'dt-n', name: 'Division 2 Norrland', promotesTo: ['e-n']},
+      { id: 'dt-ns', name: 'Division 2 Norra Svealand', promotesTo: ['e-n']},
+      { id: 'dt-ss', name: 'Division 2 Södra Svealand', promotesTo: ['e-n']},
+      { id: 'dt-ng', name: 'Division 2 Norra Götaland', promotesTo: ['e-s']},
+      { id: 'dt-vg', name: 'Division 2 Västra Götaland', promotesTo: ['e-s']},
+      { id: 'dt-sg', name: 'Division 2 Södra Götaland', promotesTo: ['e-s']}
     ]
   },
   indonesia: {
     level1: [{ id: 'sl', name: 'Super League' }],
     level2: [
-      { id: 'c-a', name: 'Championship A' },
-      { id: 'c-b', name: 'Championship B' }
-    ],
-    level3: [
-      { id: 'ln-a', name: 'Liga Nusantara Group A' },
-      { id: 'ln-b', name: 'Liga Nusantara Group B' },
-      { id: 'ln-c', name: 'Liga Nusantara Group C' }
+      { id: 'c-a', name: 'Championship A', promotesTo: ['sl']},
+      { id: 'c-b', name: 'Championship B', promotesTo: ['sl']}
     ]
   },
-  føroyar: {
-    level1: [{ id: 'fipl', name: 'Faroe Islands Premier League' }],
-    level2: [{ id: 'ed', name: '1. deild' }],
-    level3: [{ id: 'tveyd', name: '2. deild' }],
-    level4: [{ id: 'td', name: '3. deild' }]
+  faroe: {
+    level1: [
+      { id: 'fipl', name: 'Faroe Islands Premier League' }
+    ],
+    level2: [
+      { id: 'ed', name: '1. deild', promotesTo: ['fipl']}
+    ],
+    level3: [
+      { id: 'tveyd', name: '2. deild', promotesTo: ['ed']}
+    ],
+    level4: [
+      { id: 'td', name: '3. deild', promotesTo: ['tveyd']}
+    ]
   }
 }
 
@@ -163,28 +183,91 @@ function renderLeagues(countryId) {
   }
 
   if (!countryData) {
-    levelsWrapper.innerHTML = `<p style="color: #888; padding: 1rem;">No leagues configured for this country yet.</p>`
+    levelsWrapper.innerHTML = `<p style="color: #888; padding: 1rem; text-align: center;">No leagues configured for this country yet.</p>`
     return
   }
 
-  levelsWrapper.innerHTML = Object.keys(countryData).map((levelKey, index) => {
-    const leagues = countryData[levelKey]
-    const levelNumber = index + 1
+  const levelKeys = Object.keys(countryData)
 
-    return `
-      <div class="league-level-section" style="margin-bottom: 1.5rem;">
-        <h4 style="margin-bottom: 0.5rem; color: #aaa;">Level ${levelNumber}</h4>
-        <div class="league-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
-          ${leagues.map(l => `
-            <div class="league-card" onclick="window.location.hash='#league/${l.id}'" style="padding: 0.75rem; border: 1px solid #333; cursor: pointer; border-radius: 4px;">
-              <div class="circle-icon"></div>
-              <div>${l.name}</div>
-            </div>
-          `).join('')}
+  levelsWrapper.innerHTML = `
+    <svg id="league-svg-canvas"></svg>
+    ${levelKeys.map((levelKey, index) => {
+      const leagues = countryData[levelKey]
+      const levelNumber = index + 1
+
+      return `
+        <div class="league-level-section">
+          <h4 class="level-header">Level ${levelNumber}</h4>
+          <div class="league-row">
+            ${leagues.map(l => {
+              if (l.isFeederLink) {
+                return `
+                  <div class="league-card feeder-card" id="league-${l.id}" data-promotes-to="${(l.promotesTo || []).join(',')}" onclick="window.location.hash='#feeders/${l.id}'">
+                    <div class="league-card-title">${l.name}</div>
+                    <div class="feeder-badge">View Sub-Divisions &rarr;</div>
+                  </div>
+                `
+              }
+
+              return `
+                <div class="league-card" id="league-${l.id}" data-promotes-to="${(l.promotesTo || []).join(',')}" onclick="window.location.hash='#league/${l.id}'">
+                  <div class="league-card-title">${l.name}</div>
+                </div>
+              `
+            }).join('')}
+          </div>
         </div>
-      </div>
-    `
-  }).join('')
+      `
+    }).join('')}
+  `
+
+  // Double-check connection coordinates after DOM layout stabilizes
+  requestAnimationFrame(() => {
+    drawConnections()
+    setTimeout(drawConnections, 50)
+  })
+
+  window.removeEventListener('resize', drawConnections)
+  window.addEventListener('resize', drawConnections)
+}
+
+function drawConnections() {
+  const wrapper = document.getElementById('dynamic-levels-wrapper')
+  const svg = document.getElementById('league-svg-canvas')
+  if (!wrapper || !svg) return
+
+  // Cover full dimensions of wrapper
+  const wrapperRect = wrapper.getBoundingClientRect()
+  svg.setAttribute('width', wrapper.scrollWidth || wrapperRect.width)
+  svg.setAttribute('height', wrapper.scrollHeight || wrapperRect.height)
+
+  let svgContent = ''
+
+  const cards = wrapper.querySelectorAll('.league-card')
+  cards.forEach(childCard => {
+    const targetsStr = childCard.getAttribute('data-promotes-to')
+    if (!targetsStr) return
+
+    const targetIds = targetsStr.split(',').filter(Boolean)
+    targetIds.forEach(targetId => {
+      const parentCard = document.getElementById(`league-${targetId}`)
+      if (!parentCard) return
+
+      const childRect = childCard.getBoundingClientRect()
+      const parentRect = parentCard.getBoundingClientRect()
+
+      // Calculate relative coordinates to container
+      const x1 = childRect.left + childRect.width / 2 - wrapperRect.left + wrapper.scrollLeft
+      const y1 = childRect.top - wrapperRect.top + wrapper.scrollTop
+
+      const x2 = parentRect.left + parentRect.width / 2 - wrapperRect.left + wrapper.scrollLeft
+      const y2 = parentRect.bottom - wrapperRect.top + wrapper.scrollTop
+
+      svgContent += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#555" stroke-width="2" />`
+    })
+  })
+
+  svg.innerHTML = svgContent
 }
 
 function renderLeagueDashboard() {

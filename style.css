@@ -7,7 +7,11 @@
   --font: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* { 
+  box-sizing: border-box; 
+  margin: 0; 
+  padding: 0; 
+}
 
 body {
   background-color: var(--bg);
@@ -24,7 +28,9 @@ body {
   letter-spacing: -2px;
 }
 
-.hidden { display: none !important; }
+.hidden { 
+  display: none !important; 
+}
 
 .flag-grid {
   display: grid;
@@ -50,40 +56,17 @@ body {
   margin-bottom: 0.5rem;
 }
 
-.league-grid {
-  display: flex;
-  justify-content: center;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.league-card {
-  border: 2px solid var(--border);
-  width: 120px;
-  height: 120px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.circle-icon {
-  width: 40px;
-  height: 40px;
-  background: black;
-  border-radius: 50%;
-  margin-bottom: 0.5rem;
-}
-
-.three-col-layout, .team-bottom-row {
+.three-col-layout, 
+.team-bottom-row {
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
   gap: 1.5rem;
   align-items: start;
 }
 
-.placeholder-box, .standings-box, .team-summary-box {
+.placeholder-box, 
+.standings-box, 
+.team-summary-box {
   background: var(--box-bg);
   color: var(--box-text);
   padding: 2rem;
@@ -108,4 +91,184 @@ body {
   justify-content: center;
   font-size: 1.2rem;
   margin: 0 auto;
+}
+
+#dynamic-levels-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 2rem 0;
+}
+
+.league-level-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1100px;
+}
+
+.level-header {
+  color: #888;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+
+.league-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.league-card-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.league-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0.85rem 1.25rem;
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 210px;
+  height: 70px;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+  z-index: 2;
+}
+
+.league-card:hover {
+  border-color: #0070f3;
+  transform: translateY(-2px);
+}
+
+.league-card-title {
+  color: #fff;
+  font-weight: 500;
+  font-size: 0.9rem;
+  line-height: 1.2;
+}
+
+.card-stem-top {
+  width: 2px;
+  height: 20px;
+  background-color: #555;
+}
+
+.card-stem-bottom {
+  width: 2px;
+  height: 20px;
+  background-color: #555;
+}
+
+#dynamic-levels-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 2rem 0;
+  gap: 3.5rem;
+}
+
+#league-svg-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.league-level-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  z-index: 2;
+}
+
+.level-header {
+  color: #888;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+
+/* Flexible Row - Cards stretch/shrink fluidly */
+.league-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+/* Fluid Responsive League Cards */
+.league-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0.5rem 0.75rem;
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 6px;
+  cursor: pointer;
+  
+  /* Enables cards to stretch or shrink smoothly to fit screen width */
+  flex: 1 1 0px;
+  min-width: 100px; /* Min width before text truncates safely */
+  max-width: 260px;
+  height: 65px;
+  
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.league-card:hover {
+  border-color: #0070f3;
+  transform: translateY(-2px);
+}
+
+.league-card-title {
+  color: #fff;
+  font-weight: 500;
+  font-size: 0.8rem;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+/* Special Styling for Sub-Division / Feeder Link Cards */
+.feeder-card {
+  border-style: dashed;
+  background: #181818;
+}
+
+.feeder-badge {
+  font-size: 0.65rem;
+  color: #0070f3;
+  margin-top: 0.25rem;
+  font-weight: 600;
+  text-transform: uppercase;
 }

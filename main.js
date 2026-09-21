@@ -122,6 +122,88 @@ const LEAGUES_BY_COUNTRY = {
   }
 }
 
+// main colour
+const MTC_THEME = {
+  accent: '#4A4A4A',
+  glow: 'rgba(74, 74, 74, 0.3)',
+  ribbons: ['#6A6A6A', '#4A4A4A', '#2A2A2A']
+}
+
+// put all nation colours here 
+// ribbons: light shade, base colour (same as accent), dark shade)
+const COUNTRY_THEMES = {
+  england: {
+    accent: '#ef4444',
+    glow: 'rgba(239, 68, 68, 0.3)',
+    ribbons: ['#f87171', '#ef4444', '#b91c1c'] 
+  },
+  france: {
+    accent: '#3b82f6',
+    glow: 'rgba(59, 130, 246, 0.3)',
+    ribbons: ['#60a5fa', '#3b82f6', '#1d4ed8']
+  },
+  germany: {
+    accent: '#eab308',
+    glow: 'rgba(234, 179, 8, 0.3)',
+    ribbons: ['#fde047', '#eab308', '#a16207']
+  },
+  italy: {
+    accent: '#10b981',
+    glow: 'rgba(16, 185, 129, 0.3)',
+    ribbons: ['#34d399', '#10b981', '#047857']
+  },
+  spain: {
+    accent: '#f59e0b',
+    glow: 'rgba(245, 158, 11, 0.3)',
+    ribbons: ['#fbbf24', '#f59e0b', '#b45309']
+  },
+  scotland: {
+    accent: '#0284c7',
+    glow: 'rgba(2, 132, 199, 0.3)',
+    ribbons: ['#38bdf8', '#0284c7', '#0369a1']
+  }
+  // add more using: 
+  //            nation: { accent: '...', glow: '...', ribbons: ['light', 'base', 'dark'] }
+}
+
+// put all team colours here
+const TEAM_THEMES = {
+  'arsenal': {
+    accent: '#dc2626',
+    glow: 'rgba(220, 38, 38, 0.3)',
+    ribbons: ['#f87171', '#dc2626', '#991b1b']
+  },
+  'chelsea': {
+    accent: '#2563eb',
+    glow: 'rgba(37, 99, 235, 0.3)',
+    ribbons: ['#60a5fa', '#2563eb', '#1e40af']
+  }
+  // add more using: 
+  //            'team-id': { accent: '...', glow: '...', ribbons: ['light', 'base', 'dark'] }
+}
+
+function setMainTheme() {
+  applyTheme(MTC_THEME)
+}
+
+function setCountryTheme(countryId) {
+  const theme = COUNTRY_THEMES[countryId] || MTC_THEME
+  applyTheme(theme)
+}
+
+function setTeamTheme(teamId) {
+  const theme = TEAM_THEMES[teamId] || MTC_THEME
+  applyTheme(theme)
+}
+
+function applyTheme(theme) {
+  document.documentElement.style.setProperty('--country-accent', theme.accent)
+  document.documentElement.style.setProperty('--country-glow', theme.glow)
+  document.documentElement.style.setProperty('--ribbon-1', theme.ribbons[0])
+  document.documentElement.style.setProperty('--ribbon-2', theme.ribbons[1])
+  document.documentElement.style.setProperty('--ribbon-3', theme.ribbons[2])
+}
+
 function route() {
   const hash = window.location.hash || '#countries'
 
@@ -131,6 +213,8 @@ function route() {
     const countryId = hash.replace('#leagues/', '')
     const country = COUNTRIES.find(c => c.id === countryId)
     const countryName = country ? country.name : countryId
+
+    setCountryTheme(countryId) // <-- Applies Country Theme (DCCs)
 
     document.getElementById('selected-country-title').textContent = `${countryName} Leagues`
     renderLeagues(countryId)
@@ -145,11 +229,16 @@ function route() {
 
   } else if (hash.startsWith('#team/')) {
     const teamId = hash.replace('#team/', '')
+
+    setTeamTheme(teamId) // <-- Applies Team Theme (DTCs)
+
     document.getElementById('team-name-header').textContent = teamId === 'hemel' ? 'Hemel Hempstead Town FC' : teamId
     renderTeamDashboard()
     document.getElementById('view-team-dashboard').classList.remove('hidden')
 
   } else {
+    setMainTheme() // <-- Applies Main Theme (MTC)
+
     renderCountries()
     document.getElementById('view-countries').classList.remove('hidden')
   }
@@ -170,6 +259,8 @@ function renderCountries() {
 }
 
 function renderLeagues(countryId) {
+  setCountryTheme(countryId)
+
   const container = document.getElementById('view-leagues')
   if (!container) return
 
@@ -183,12 +274,13 @@ function renderLeagues(countryId) {
   }
 
   if (!countryData) {
-    levelsWrapper.innerHTML = `<p style="color: #888; padding: 1rem; text-align: center;">No leagues configured for this country yet.</p>`
+    levelsWrapper.innerHTML = `<p style="color: var(--text-muted); padding: 1rem; text-align: center;">No leagues configured for this country yet.</p>`
     return
   }
 
   const levelKeys = Object.keys(countryData)
 
+  // 3. Render SVG Canvas + HTML Tiers
   levelsWrapper.innerHTML = `
     <svg id="league-svg-canvas"></svg>
     ${levelKeys.map((levelKey, index) => {
@@ -221,7 +313,6 @@ function renderLeagues(countryId) {
     }).join('')}
   `
 
-  // Double-check connection coordinates after DOM layout stabilizes
   requestAnimationFrame(() => {
     drawConnections()
     setTimeout(drawConnections, 50)
@@ -236,7 +327,6 @@ function drawConnections() {
   const svg = document.getElementById('league-svg-canvas')
   if (!wrapper || !svg) return
 
-  // Cover full dimensions of wrapper
   const wrapperRect = wrapper.getBoundingClientRect()
   svg.setAttribute('width', wrapper.scrollWidth || wrapperRect.width)
   svg.setAttribute('height', wrapper.scrollHeight || wrapperRect.height)
@@ -248,7 +338,9 @@ function drawConnections() {
     const targetsStr = childCard.getAttribute('data-promotes-to')
     if (!targetsStr) return
 
+    const childId = childCard.id.replace('league-', '')
     const targetIds = targetsStr.split(',').filter(Boolean)
+
     targetIds.forEach(targetId => {
       const parentCard = document.getElementById(`league-${targetId}`)
       if (!parentCard) return
@@ -256,18 +348,82 @@ function drawConnections() {
       const childRect = childCard.getBoundingClientRect()
       const parentRect = parentCard.getBoundingClientRect()
 
-      // Calculate relative coordinates to container
       const x1 = childRect.left + childRect.width / 2 - wrapperRect.left + wrapper.scrollLeft
       const y1 = childRect.top - wrapperRect.top + wrapper.scrollTop
 
       const x2 = parentRect.left + parentRect.width / 2 - wrapperRect.left + wrapper.scrollLeft
       const y2 = parentRect.bottom - wrapperRect.top + wrapper.scrollTop
 
-      svgContent += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#555" stroke-width="2" />`
+      // Store source and target IDs on line for hover tracing
+      svgContent += `
+        <line 
+          x1="${x1}" y1="${y1}" 
+          x2="${x2}" y2="${y2}" 
+          data-from="${childId}" 
+          data-to="${targetId}" 
+          class="league-connection-line"
+        />
+      `
     })
   })
 
   svg.innerHTML = svgContent
+
+  // Attach hover listeners after lines are drawn
+  attachHoverHighlighting()
+}
+
+function attachHoverHighlighting() {
+  const cards = document.querySelectorAll('.league-card')
+  cards.forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      const cardId = card.id.replace('league-', '')
+      highlightPromotionPath(cardId)
+    })
+
+    card.addEventListener('mouseleave', () => {
+      resetLineHighlights()
+    })
+  })
+}
+
+function highlightPromotionPath(currentLeagueId) {
+  const wrapper = document.getElementById('dynamic-levels-wrapper')
+  if (!wrapper) return
+
+  // Dim non-matching lines slightly for better contrast
+  wrapper.classList.add('lines-hovered')
+
+  // Recursively find and highlight only upward promotion lines
+  function traceUpwards(leagueId) {
+    const card = document.getElementById(`league-${leagueId}`)
+    if (!card) return
+
+    const targetsStr = card.getAttribute('data-promotes-to')
+    if (!targetsStr) return
+
+    const targetIds = targetsStr.split(',').filter(Boolean)
+    targetIds.forEach(targetId => {
+      // Find connecting SVG line from current league up to target
+      const line = wrapper.querySelector(`line[data-from="${leagueId}"][data-to="${targetId}"]`)
+      if (line) {
+        line.classList.add('highlight-white')
+      }
+      // Continue tracing upward if target promotes further
+      traceUpwards(targetId)
+    })
+  }
+
+  traceUpwards(currentLeagueId)
+}
+
+function resetLineHighlights() {
+  const wrapper = document.getElementById('dynamic-levels-wrapper')
+  if (!wrapper) return
+
+  wrapper.classList.remove('lines-hovered')
+  const highlightedLines = wrapper.querySelectorAll('line.highlight-white')
+  highlightedLines.forEach(line => line.classList.remove('highlight-white'))
 }
 
 function renderLeagueDashboard() {

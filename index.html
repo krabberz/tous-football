@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tous</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <header class="navbar">
+    <a href="#" id="home-link" class="logo">tous</a>
+    <nav id="breadcrumbs" class="breadcrumbs"></nav>
+  </header>
+
+  <main class="container">
+    <section id="view-countries" class="view">
+      <div id="country-grid" class="flag-grid"></div>
+    </section>
+
+    <section id="view-leagues" class="view hidden">
+      <h1 id="selected-country-title" class="page-title">leagues</h1>
+      
+      <div class="step-group">
+        <h2>step one</h2>
+        <div id="step-2-grid" class="league-grid"></div>
+      </div>
+
+      <div class="step-group">
+        <h2>step two</h2>
+        <div id="step-2-grid" class="league-grid"></div>
+      </div>
+
+      <div class="step-group">
+        <h2>step three</h2>
+        <div id="step-3-grid" class="league-grid"></div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: League Dashboard (e.g. NLS) -->
+    <section id="view-league-dashboard" class="view hidden">
+      <h1 id="league-name-header" class="page-title">National League South</h1>
+      
+      <div class="three-col-layout">
+        <aside class="social-panel" id="league-twitter-embed">
+          <div class="placeholder-box">Twitter/X</div>
+        </aside>
+
+        <article class="main-panel">
+          <div id="league-standings-table" class="standings-box">
+          </div>
+        </article>
+
+        <aside class="social-panel" id="league-facebook-embed">
+          <div class="placeholder-box">Facebook</div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="view-team-dashboard" class="view hidden">
+      <h1 id="team-name-header" class="page-title">Hemel Hempstead Town FC</h1>
+
+      <div class="team-top-row">
+        <div class="logo-box">
+          <div id="team-logo-circle" class="circle-logo">logo</div>
+        </div>
+        <div class="team-summary-box">
+          <h3>League Standings</h3>
+          <div id="team-recent-info">Loading results...</div>
+        </div>
+      </div>
+
+      <div class="team-bottom-row">
+        <aside class="social-panel">
+          <div id="team-twitter-feed" class="placeholder-box">Twitter/X</div>
+        </aside>
+
+        <article class="center-content-panel">
+          <div class="sub-links-box">
+            <h3>About id="team-name-header"</h3>
+            <ul>
+              <li><a href="#squad">Squad</a></li>
+              <li><a href="#history">History</a></li>
+              <li><a href="#news">News</a></li>
+              <li><a href="#matches">Fixtures & Results</a></li>
+              <li><a href="#transfers">Transfers</a></li>
+            </ul>
+          </div>
+        </article>
+
+        <aside class="social-panel">
+          <div id="team-facebook-feed" class="placeholder-box">Facebook</div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

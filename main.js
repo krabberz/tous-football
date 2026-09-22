@@ -313,6 +313,64 @@ const LEAGUES_BY_COUNTRY = {
       { id: 'sd', name: 'Segona Divisió', promotesTo: ['pd'] }
     ]
   },
+  angola: {
+    level1: [
+      {id: 'gb', name: 'Girabola'}
+    ]
+  },
+  anguilla: {
+    level1: [
+      { id: 'afa-sml', name: 'AFA Senior Male League' }
+    ]
+  },
+  antigua: {
+    level1: [
+      { id: 'abpd', name: 'Antigua and Barbuda Premier Division' }
+    ],
+    level2: [
+      { id: 'abfd', name: 'Antigua and Barbuda First Division', promotesTo: ['abpd'] }
+    ],
+    level3: [
+      { id: 'absd', name: 'Antigua and Barbuda Second Division', promotesTo: ['abfd'] }
+    ]
+  },
+  argentina: {
+    level1: [
+      { id: 'pd', name: 'Primera División' }
+    ],
+    level2: [
+      { id: 'pn', name: 'Primera Nacional', promotesTo: ['pd'] }
+    ],
+    level3: [
+      { id: 'pb', name: 'Primera B', promotesTo: ['pn'] },
+      { id: 'tfa', name: 'Torneo Federal A', promotesTo: ['pn'] }
+    ],
+    level4: [
+      { id: 'pc', name: 'Primera C', promotesTo: ['pb'] },
+      { id: 'trfa', name: 'Torneo Regional Federal Amateur', promotesTo: ['tfa'] }
+    ]
+  },
+  armenia: {
+    level1: [
+      { id: 'apl', name: 'Armenian Premier League' }
+    ],
+    level2: [
+      { id: 'afl', name: 'Armenian First League', promotesTo: ['apl'] }
+    ]
+  },
+  aruba: {
+    level1: [
+      { id: 'addh', name: 'Aruban Division di Honor' }
+    ],
+    level2: [
+      { id: 'adu', name: 'Aruban Division Uno', promotesTo: ['addh'] }
+    ]
+  },
+  australia: {
+    level1: [
+      { id: 'alm', name: 'A-League Men' }
+    ]
+  },
   england: {
     level1: [
       { id: 'pl', name: 'Premier League'}
@@ -671,7 +729,6 @@ function renderCountries() {
     searchInput.dataset.hasListener = 'true'
   }
 }
-
 
 // search
 function filterCountries() {

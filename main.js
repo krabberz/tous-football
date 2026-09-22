@@ -492,10 +492,6 @@ const TEAM_THEMES = {
   //            'team-id': { accent: '...', glow: '...', ribbons: ['light', 'base', 'dark'] }
 }
 
-const FEATURED_PAGES = {
-
-}
-
 function getRandomPage() {
   const pages = []
 
@@ -578,8 +574,26 @@ function route() {
   } else if (hash.startsWith('#league/')) {
     // 3. League Dashboard View
     const leagueId = hash.replace('#league/', '')
-    const isNLS = leagueId === 'nl-s' || leagueId === 'nls'
-    document.getElementById('league-name-header').textContent = isNLS ? 'National League South' : leagueId.toUpperCase()
+    
+    // Look up league object and country name dynamically
+    let foundLeague = null
+    let foundCountryName = ''
+
+    for (const [countryId, countryData] of Object.entries(LEAGUES_BY_COUNTRY)) {
+      const allLeaguesInCountry = Object.values(countryData).flat()
+      const match = allLeaguesInCountry.find(l => l.id === leagueId)
+
+      if (match) {
+        foundLeague = match
+        const countryObj = COUNTRIES.find(c => c.id === countryId)
+        foundCountryName = countryObj ? countryObj.name : countryId
+        break
+      }
+    }
+
+    const leagueTitle = foundLeague ? `${foundLeague.name} (${foundCountryName})` : leagueId.toUpperCase()
+    document.getElementById('league-name-header').textContent = leagueTitle
+
     renderLeagueDashboard()
     document.getElementById('view-league-dashboard').classList.remove('hidden')
 

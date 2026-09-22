@@ -264,6 +264,55 @@ const COUNTRIES = [
 ]
 
 const LEAGUES_BY_COUNTRY = {
+  afghanistan: {
+    level1: [
+      { id: 'acl', name: 'Afghanistan Champions League' }
+    ]
+  },
+  albania: {
+    level1: [
+      { id: 'ks', name: 'Kategoria Superiore' }
+    ],
+    level2: [
+      { id: 'kep', name: 'Kategoria e Parë', promotesTo: ['ks']}
+    ],
+    level3: [
+      { id: 'ked', name: 'Kategoria e Dytë', promotesTo: ['kep'] }
+    ],
+    level4: [
+      { id: 'ket', name: 'Kategoria e Tretë', promotesTo: ['ked'] }
+    ]
+  },
+  algeria: {
+    level1: [
+      {id: 'alpu', name: 'Algerian Ligue Professionnelle 1'}
+    ],
+    level2: [
+      {id: 'ld-gcw', name: 'League 2 Group Centre-west', promotesTo: ['alpu']},
+      {id: 'ld-gce', name: 'League 2 Group Centre-east', promotesTo: ['alpu']},
+    ],
+    level3: [
+      {id: 'ir-gw', name: 'Interregional Group West', promotesTo: ['ld-gcw']},
+      {id: 'ir-gcw', name: 'Interregional Group Centre West', promotesTo: ['ld-gcw']},
+      {id: 'ir-gsw', name: 'Interregional Group South West', promotesTo: ['ld-gcw']},
+      {id: 'ir-gce', name: 'Interregional Group Centre East', promotesTo: ['ld-gce']},
+      {id: 'ir-ge', name: 'Interregional Group East', promotesTo: ['ld-gce']},
+      {id: 'ir-gse', name: 'Interregional Group South East', promotesTo: ['ld-gce']}
+    ],
+  },
+  amsamoa: {
+    level1: [
+      { id: 'ffassl', name: 'FFAS Senior League' }
+    ]
+  },
+  andorra: {
+    level1: [
+      { id: 'pd', name: 'Primera Divisió' }
+    ],
+    level2: [
+      { id: 'sd', name: 'Segona Divisió', promotesTo: ['pd'] }
+    ]
+  },
   england: {
     level1: [
       { id: 'pl', name: 'Premier League'}
@@ -299,6 +348,20 @@ const LEAGUES_BY_COUNTRY = {
       { id: 'il-do-sc', name: 'Isthmian League Division One South Central', promotesTo: ['sl-pd-s']},
       { id: 'il-do-n', name: 'Isthmian League Division One North', promotesTo: ['il-pd']},
       { id: 'il-do-se', name: 'Isthmian League Division One South East', promotesTo: ['il-pd']}
+    ]
+  },
+  faroe: {
+    level1: [
+      { id: 'fipl', name: 'Faroe Islands Premier League' }
+    ],
+    level2: [
+      { id: 'ed', name: '1. deild', promotesTo: ['fipl']}
+    ],
+    level3: [
+      { id: 'tveyd', name: '2. deild', promotesTo: ['ed']}
+    ],
+    level4: [
+      { id: 'td', name: '3. deild', promotesTo: ['tveyd']}
     ]
   },
   france: {
@@ -338,6 +401,15 @@ const LEAGUES_BY_COUNTRY = {
       { id: 'rl-b', name: 'Regionalliga Bayern', promotesTo: ['d-l']}
     ]
   },
+  indonesia: {
+    level1: [
+      { id: 'sl', name: 'Super League' }
+    ],
+    level2: [
+      { id: 'c-a', name: 'Championship A', promotesTo: ['sl']},
+      { id: 'c-b', name: 'Championship B', promotesTo: ['sl']}
+    ]
+  },
   sweden: {
     level1: [
       { id: 'as', name: 'Allsvenskan' }
@@ -356,27 +428,6 @@ const LEAGUES_BY_COUNTRY = {
       { id: 'dt-ng', name: 'Division 2 Norra Götaland', promotesTo: ['e-s']},
       { id: 'dt-vg', name: 'Division 2 Västra Götaland', promotesTo: ['e-s']},
       { id: 'dt-sg', name: 'Division 2 Södra Götaland', promotesTo: ['e-s']}
-    ]
-  },
-  indonesia: {
-    level1: [{ id: 'sl', name: 'Super League' }],
-    level2: [
-      { id: 'c-a', name: 'Championship A', promotesTo: ['sl']},
-      { id: 'c-b', name: 'Championship B', promotesTo: ['sl']}
-    ]
-  },
-  faroe: {
-    level1: [
-      { id: 'fipl', name: 'Faroe Islands Premier League' }
-    ],
-    level2: [
-      { id: 'ed', name: '1. deild', promotesTo: ['fipl']}
-    ],
-    level3: [
-      { id: 'tveyd', name: '2. deild', promotesTo: ['ed']}
-    ],
-    level4: [
-      { id: 'td', name: '3. deild', promotesTo: ['tveyd']}
     ]
   }
 }
@@ -607,7 +658,7 @@ function renderCountries() {
   }
 }
 
-  
+
 // search
 function filterCountries() {
   const query = document.getElementById('country-search-input').value.toLowerCase().trim()

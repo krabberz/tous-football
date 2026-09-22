@@ -309,7 +309,7 @@ const LEAGUES_BY_COUNTRY = {
       { id: 'ld', name: 'Ligue 2', promotesTo: ['lu']}
     ],
     level3: [
-      { id: 'lt', name: 'Ligue 3', promotesTo: ['ld']}
+      { id: 'lt', name: 'Ligue', promotesTo: ['ld']}
     ],
     level4: [
       { id: 'nu', name: 'National 1', promotesTo: ['lt']}
@@ -571,16 +571,56 @@ function applyTheme(theme) {
 
 function renderCountries() {
   const container = document.getElementById('country-grid')
+  const searchInput = document.getElementById('country-search-input')
   if (!container) return
 
+  // 1. Reset search input value when rendering
+  if (searchInput) searchInput.value = ''
+
+  // 2. Render cards with normalized data-name attributes
   container.innerHTML = COUNTRIES.map(c => `
-    <div class="flag-card" onclick="window.location.hash='#leagues/${c.id}'">
+    <div class="flag-card" data-name="${c.name.toLowerCase()}" onclick="window.location.hash='#leagues/${c.id}'">
       <div class="country-image-placeholder" style="height: 80px; background: #eee; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center; border: 1px dashed #ccc;">
         <span style="font-size: 0.8rem; color: #666;">Image Placeholder</span>
       </div>
       <div class="country-label">${c.name}</div>
     </div>
   `).join('')
+
+  // 3. Attach input event listener directly (bypasses window scope issues)
+  if (searchInput && !searchInput.dataset.hasListener) {
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase().trim()
+      const cards = container.querySelectorAll('.flag-card')
+
+      cards.forEach(card => {
+        const countryName = card.getAttribute('data-name') || ''
+        if (countryName.includes(query)) {
+          card.style.display = ''
+        } else {
+          card.style.display = 'none'
+        }
+      })
+    })
+    // Flag to prevent adding multiple listeners if renderCountries runs again
+    searchInput.dataset.hasListener = 'true'
+  }
+}
+
+  
+// search
+function filterCountries() {
+  const query = document.getElementById('country-search-input').value.toLowerCase().trim()
+  const cards = document.querySelectorAll('#country-grid .flag-card')
+
+  cards.forEach(card => {
+    const countryName = card.getAttribute('data-name')
+    if (countryName.includes(query)) {
+      card.style.display = '' // Show card
+    } else {
+      card.style.display = 'none' // Hide card
+    }
+  })
 }
 
 function renderLeagues(countryId) {

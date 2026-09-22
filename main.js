@@ -1,10 +1,266 @@
 const COUNTRIES = [
+  // A countries
+  { id: 'afghanistan', name: 'Afghanistan' },
+  { id: 'albania', name: 'Albania' },
+  { id: 'algeria', name: 'Algeria' },
+  { id: 'amsamoa', name: 'American Samoa' },
+  { id: 'andorra', name: 'Andorra' },
+  { id: 'angola', name: 'Angola' },
+  { id: 'anguilla', name: 'Anguilla' },
+  { id: 'antigua', name: 'Antigua & Barbuda' },
+  { id: 'argentina', name: 'Argentina' },
+  { id: 'armenia', name: 'Armenia' },
+  { id: 'aruba', name: 'Aruba' },
+  { id: 'australia', name: 'Australia' },
+  { id: 'austria', name: 'Austria' },
+  { id: 'azerbaijan', name: 'Azerbaijan' },
+
+  // B countries
+  { id: 'bahamas', name: 'Bahamas' },
+  { id: 'bahrain', name: 'Bahrain' },
+  { id: 'bangladesh', name: 'Bangladesh' },
+  { id: 'barbados', name: 'Barbados' },
+  { id: 'belarus', name: 'Belarus' },
+  { id: 'belgium', name: 'Belgium' },
+  { id: 'belize', name: 'Belize' },
+  { id: 'benin', name: 'Benin' },
+  { id: 'bermuda', name: 'Bermuda' },
+  { id: 'bhutan', name: 'Bhutan' },
+  { id: 'bolivia', name: 'Bolivia' },
+  { id: 'bosnia', name: 'Bosnia and Herzegovina' },
+  { id: 'botswana', name: 'Botswana' },
+  // { id: 'bougainville', name: 'Bougainville' },
+  { id: 'brazil', name: 'Brazil' },
+  { id: 'bvi', name: 'British Virgin Islands' },
+  { id: 'brunei', name: 'Brunei' },
+  { id: 'bulgaria', name: 'Bulgaria' },
+  { id: 'burkinafaso', name: 'Burkina Faso' },
+  { id: 'burundi', name: 'Burundi' },
+
+  // C countries
+  { id: 'caboverde', name: 'Cabo Verde' },
+  { id: 'cambodia', name: 'Cambodia' },
+  { id: 'cameroon', name: 'Cameroon' },
+  { id: 'canada', name: 'Canada' },
+  { id: 'cayman', name: 'Cayman Islands' },
+  { id: 'car', name: 'Central African Republic' },
+  { id: 'tchad', name: 'Chad' },
+  { id: 'chile', name: 'Chile' },
+  { id: 'prc', name: 'China PR' },
+  { id: 'taipei', name: 'Chinese Taipei' },
+  { id: 'colombia', name: 'Colombia' },
+  { id: 'comoros', name: 'Comoros' },
+  { id: 'congo', name: 'Congo' },
+  { id: 'drc', name: 'Congo DR' },
+  { id: 'cook', name: 'Cook Islands' },
+  { id: 'costarica', name: 'Costa Rica' },
+  { id: 'ivorycoast', name: "Côte d'Ivoire" },
+  { id: 'croatia', name: 'Croatia' },
+  { id: 'cuba', name: 'Cuba' },
+  { id: 'curacao', name: 'Curaçao' },
+  { id: 'cyprus', name: 'Cyprus' },
+  { id: 'czechia', name: 'Czechia' },
+
+  // D countries
+  { id: 'denmark', name: 'Denmark' },
+  { id: 'djibouti', name: 'Djibouti' },
+  { id: 'dominica', name: 'Dominica' },
+  { id: 'dr', name: 'Dominican Republic' },
+  { id: 'dprk', name: 'DPR Korea' },
+
+  // E Countries
+  { id: 'ecuador', name: 'Ecuador' },
+  { id: 'egypt', name: 'Egypt' },
+  { id: 'elsalvador', name: 'El Salvador' },
   { id: 'england', name: 'England' },
+  { id: 'eguinea', name: 'Equatorial Guinea' },
+  { id: 'eritrea', name: 'Eritrea' },
+  { id: 'estonia', name: 'Estonia' },
+  { id: 'eswatini', name: 'Eswatini' },
+  { id: 'ethiopia', name: 'Ethiopia' },
+
+  // F countries
+  { id: 'faroe', name: 'Faroe Islands' },
+  { id: 'fiji', name: 'Fiji' },
+  { id: 'finland', name: 'Finland' },
   { id: 'france', name: 'France' },
+
+  // G countries
+  { id: 'gabon', name: 'Gabon' },
+  { id: 'georgia', name: 'Georgia' },
   { id: 'germany', name: 'Germany' },
-  { id: 'sweden', name: 'Sweden' },
+  { id: 'ghana', name: 'Ghana' },
+  { id: 'gibraltar', name: 'Gibraltar' },
+  { id: 'greece', name: 'Greece' },
+  { id: 'grenada', name: 'Grenada' },
+  { id: 'guam', name: 'Guam' },
+  { id: 'guatemala', name: 'Guatemala' },
+  { id: 'guinea', name: 'Guinea' },
+  { id: 'guineabissau', name: 'Guinea-Bissau' },
+  { id: 'guyana', name: 'Guyana' },
+
+  // H countries
+  { id: 'haiti', name: 'Haiti' },
+  { id: 'honduras', name: 'Honduras' },
+  { id: 'hongkongsar', name: 'Hong Kong' },
+  { id: 'hungary', name: 'Hungary' },
+
+  // I countries
+  { id: 'iceland', name: 'Iceland' },
+  { id: 'india', name: 'India' },
   { id: 'indonesia', name: 'Indonesia' },
-  { id: 'faroe', name: 'Faroe Islands' }
+  { id: 'iran', name: 'IR Iran' },
+  { id: 'iraq', name: 'Iraq' },
+  { id: 'israel', name: 'Israel' },
+  { id: 'italy', name: 'Italy' },
+
+  // J countries
+  { id: 'jamaica', name: 'Jamaica' },
+  { id: 'japan', name: 'Japan' },
+  { id: 'jordan', name: 'Jordan' },
+
+  // K countries
+  { id: 'kazakhstan', name: 'Kazakhstan' },
+  { id: 'kenya', name: 'Kenya' },
+  { id: 'korea', name: 'Kora Republic' },
+  { id: 'kosovo', name: 'Kosovo' },
+  { id: 'kuwait', name: 'Kuwait' },
+  { id: 'kyrgyzstan', name: 'Kyrgyz Republic' },
+
+  // L countries
+  { id: 'laos', name: 'Laos' },
+  { id: 'latvia', name: 'Latvia' },
+  { id: 'lebanon', name: 'Lebanon' },
+  { id: 'lesotho', name: 'Lesotho' },
+  { id: 'liberia', name: 'Liberia' },
+  { id: 'libya', name: 'Libya' },
+  { id: 'liechtenstein', name: 'Liechtenstein' },
+  { id: 'lithuania', name: 'Luxembourg' },
+  { id: 'luxembourg', name: 'Luxembourg' },
+
+  // M countries
+  { id: 'macausar', name: 'Macau, China' },
+  { id: 'madagascar', name: 'Madagascar' },
+  { id: 'malawi', name: 'Malawi' },
+  { id: 'malaysia', name: 'Malaysia' },
+  { id: 'maldives', name: 'Maldives' },
+  { id: 'mali', name: 'Mali' },
+  { id: 'malta', name: 'Malta ' },
+  { id: 'mauritania', name: 'Mauritania' },
+  { id: 'mauritius', name: 'Mauritius' },
+  { id: 'mexico', name: 'Mexico' },
+  { id: 'moldova', name: 'Moldova' },
+  { id: 'mongolia', name: 'Mongolia' },
+  { id: 'montenegro', name: 'Montenegro' },
+  { id: 'montserrat', name: 'Montserrat' },
+  { id: 'morocco', name: 'Morocco' },
+  { id: 'mozambique', name: 'Mozambique' },
+  { id: 'myanmar', name: 'Myanmar' },
+  
+  // N countries
+  { id: 'namibia', name: 'Namibia' },
+  { id: 'nepal', name: 'Nepal' },
+  { id: 'netherlands', name: 'Netherlands' },
+  { id: 'ncaledonia', name: 'New Caledonia' },
+  { id: 'nzealand', name: 'New Zealand' },
+  { id: 'nicaragua', name: 'Nicaragua' },
+  { id: 'niger', name: 'Niger' },
+  { id: 'nigeria', name: 'Nigeria' },
+  { id: 'northmacedonia', name: 'North Macedonia' },
+  { id: 'northernireland', name: 'Northern Ireland' },
+  { id: 'norway', name: 'Norway' },
+
+  // O countries
+  { id: 'oman', name: 'Oman' },
+
+  // P countries
+  { id: 'pakistan', name: 'Pakistan' },
+  { id: 'palestine', name: 'Palestine' },
+  { id: 'panama', name: 'Panama' },
+  { id: 'png', name: 'Papua New Guinea' },
+  { id: 'paraguay', name: 'Paraguay' },
+  { id: 'peru', name: 'Peru' },
+  { id: 'philippines', name: 'Philippines' },
+  { id: 'poland', name: 'Poland' },
+  { id: 'portugal', name: 'Portugal' },
+  { id: 'puertorico', name: 'Puerto Rico' },
+
+  // Q countries
+  { id: 'qatar', name: 'Qatar' },
+
+  // R countries
+  { id: 'ireland', name: 'Republic of Ireland' },
+  { id: 'romania', name: 'Romania' },
+  { id: 'russia', name: 'Russia' },
+  { id: 'rwanda', name: 'Rwanda' },
+
+  // S countries
+  { id: 'samoa', name: 'Samoa' },
+  { id: 'sanmarino', name: 'San Marino' },
+  { id: 'saotome', name: 'São Tomé and Principe' },
+  { id: 'saudiarabia', name: 'Saudi Arabia' },
+  { id: 'scotland', name: 'Scotland' },
+  { id: 'senegal', name: 'Senegal' },
+  { id: 'serbia', name: 'Serbia' },
+  { id: 'seychelles', name: 'Seychelles' },
+  { id: 'sierraleone', name: 'Sierra Leone' },
+  { id: 'singapore', name: 'Singapore' },
+  { id: 'slovakia', name: 'Slovakia' },
+  { id: 'slovenia', name: 'Slovenia' },
+  { id: 'solomon', name: 'Solomon Islands' },
+  { id: 'somalia', name: 'Somalia' },
+  { id: 'aforikaborwa', name: 'South Africa' },
+  { id: 'suuthsudan', name: 'South Sudan' },
+  { id: 'spain', name: 'Spain' },
+  { id: 'srilanka', name: 'Sri Lanka' },
+  { id: 'stkitts', name: 'St. Kitts and Nevis' },
+  { id: 'stlucia', name: 'St. Lucia' },
+  { id: 'stvg', name: 'St. Vincent / Grenadines' },
+  { id: 'sudan', name: 'Sudan' },
+  { id: 'suriname', name: 'Suriname' },
+  { id: 'sweden', name: 'Sweden' },
+  { id: 'switzerland', name: 'Switzerland' },
+  { id: 'syria', name: 'Syria' },
+
+  // T countries
+  { id: 'tahiti', name: 'Tahiti' },
+  { id: 'tajikistan', name: 'Tajikistan' },
+  { id: 'tanzania', name: 'Tanzania' },
+  { id: 'thailand', name: 'Thailand' },
+  { id: 'gambia', name: 'The Gambia' },
+  { id: 'easttimor', name: 'Timor-Leste' },
+  { id: 'togo', name: 'Togo' },
+  { id: 'tonga', name: 'Tonga' },
+  { id: 'trinidad', name: 'Trinidad and Tobago' },
+  { id: 'tunisia', name: 'Tunisia' },
+  { id: 'turkiye', name: 'Türkiye' },
+  { id: 'turkmenistan', name: 'Turkmenistan' },
+  { id: 'turks', name: 'Turks and Caicos Islands' },
+
+  // U countries
+  { id: 'uganda', name: 'Uganda' },
+  { id: 'ukraine', name: 'Ukraine' },
+  { id: 'uae', name: 'United Arab Emirates' },
+  { id: 'uruguay', name: 'Uruguay' },
+  { id: 'usvi', name: 'US Virgin Islands' },
+  { id: 'usa', name: 'USA' },
+  { id: 'uzbekistan', name: 'Uzbekistan' },
+
+  // V countries
+  { id: 'vanuatu', name: 'Vanuatu' },
+  { id: 'venezuela', name: 'Venezuela' },
+  { id: 'vietnam', name: 'Vietnam' },
+
+  // W countries
+  { id: 'wales', name: 'Wales' },
+
+  // Y countries
+  { id: 'yemen', name: 'Yemen' },
+
+  // Z countries
+  { id: 'zambia', name: 'Zambia' },
+  { id: 'zimbabwe', name: 'Zimbabwe' }
+
 ]
 
 const LEAGUES_BY_COUNTRY = {
@@ -53,12 +309,15 @@ const LEAGUES_BY_COUNTRY = {
       { id: 'ld', name: 'Ligue 2', promotesTo: ['lu']}
     ],
     level3: [
-      { id: 'lt', name: 'National 1', promotesTo: ['ld']}
+      { id: 'lt', name: 'Ligue 3', promotesTo: ['ld']}
     ],
     level4: [
-      { id: 'nu-a', name: 'National 2 Group A', promotesTo: ['lt']},
-      { id: 'nu-b', name: 'National 2 Group B', promotesTo: ['lt']},
-      { id: 'nu-c', name: 'National 2 Group C', promotesTo: ['lt']}
+      { id: 'nu', name: 'National 1', promotesTo: ['lt']}
+    ],
+    level5: [
+      { id: 'nd-a', name: 'National 2 Group A', promotesTo: ['nu']},
+      { id: 'nd-b', name: 'National 2 Group B', promotesTo: ['nu']},
+      { id: 'nd-c', name: 'National 2 Group C', promotesTo: ['nu']}
     ]
   },
   germany: {
@@ -182,6 +441,112 @@ const TEAM_THEMES = {
   //            'team-id': { accent: '...', glow: '...', ribbons: ['light', 'base', 'dark'] }
 }
 
+const FEATURED_PAGES = {
+
+}
+
+function getRandomPage() {
+  const pages = []
+
+  // 1. Add all Country pages dynamically from COUNTRIES
+  COUNTRIES.forEach(c => {
+    pages.push({
+      title: `${c.name} Leagues`,
+      hash: `#leagues/${c.id}`,
+      desc: `Explore the football league structure of ${c.name}.`
+    })
+  })
+
+  // 2. Add all League pages dynamically from LEAGUES_BY_COUNTRY
+  Object.keys(LEAGUES_BY_COUNTRY).forEach(countryId => {
+    const country = COUNTRIES.find(c => c.id === countryId)
+    const countryName = country ? country.name : countryId
+    const countryData = LEAGUES_BY_COUNTRY[countryId]
+
+    Object.values(countryData).flat().forEach(league => {
+      pages.push({
+        title: league.name,
+        hash: `#league/${league.id}`,
+        desc: `Check out the standings and tier details for ${league.name} in ${countryName}.`
+      })
+    })
+  })
+
+  // 3. Add all Team pages dynamically from TEAM_THEMES
+  Object.keys(TEAM_THEMES).forEach(teamId => {
+    pages.push({
+      title: teamId.charAt(0).toUpperCase() + teamId.slice(1),
+      hash: `#team/${teamId}`,
+      desc: `View club details and performance metrics.`
+    })
+  })
+
+  // Pick a random entry from the dynamic pool
+  return pages[Math.floor(Math.random() * pages.length)]
+}
+
+function renderHome() {
+  setMainTheme()
+
+  const randomPage = getRandomPage()
+
+  const titleEl = document.getElementById('potd-title')
+  const descEl = document.getElementById('potd-desc')
+  const linkEl = document.getElementById('potd-link')
+
+  if (titleEl && descEl && linkEl) {
+    titleEl.textContent = randomPage.title
+    descEl.textContent = randomPage.desc
+    linkEl.setAttribute('href', randomPage.hash)
+  }
+}
+
+function route() {
+  const hash = window.location.hash || '#home'
+
+  // Hide all views first
+  document.querySelectorAll('.view').forEach(view => view.classList.add('hidden'))
+
+  if (hash === '#countries') {
+    // 1. All Countries View
+    setMainTheme()
+    renderCountries()
+    document.getElementById('view-countries').classList.remove('hidden')
+
+  } else if (hash.startsWith('#leagues/')) {
+    // 2. Leagues View
+    const countryId = hash.replace('#leagues/', '')
+    const country = COUNTRIES.find(c => c.id === countryId)
+    const countryName = country ? country.name : countryId
+
+    setCountryTheme(countryId)
+    document.getElementById('selected-country-title').textContent = `${countryName} Leagues`
+    renderLeagues(countryId)
+    document.getElementById('view-leagues').classList.remove('hidden')
+
+  } else if (hash.startsWith('#league/')) {
+    // 3. League Dashboard View
+    const leagueId = hash.replace('#league/', '')
+    const isNLS = leagueId === 'nl-s' || leagueId === 'nls'
+    document.getElementById('league-name-header').textContent = isNLS ? 'National League South' : leagueId.toUpperCase()
+    renderLeagueDashboard()
+    document.getElementById('view-league-dashboard').classList.remove('hidden')
+
+  } else if (hash.startsWith('#team/')) {
+    // 4. Team Dashboard View
+    const teamId = hash.replace('#team/', '')
+    setTeamTheme(teamId)
+    document.getElementById('team-name-header').textContent = teamId === 'hemel' ? 'Hemel Hempstead Town FC' : teamId
+    renderTeamDashboard()
+    document.getElementById('view-team-dashboard').classList.remove('hidden')
+
+  } else {
+    // 5. Default Homepage View (#home, #, or unknown routes)
+    renderHome()
+    document.getElementById('view-home').classList.remove('hidden')
+  }
+}
+
 function setMainTheme() {
   applyTheme(MTC_THEME)
 }
@@ -202,46 +567,6 @@ function applyTheme(theme) {
   document.documentElement.style.setProperty('--ribbon-1', theme.ribbons[0])
   document.documentElement.style.setProperty('--ribbon-2', theme.ribbons[1])
   document.documentElement.style.setProperty('--ribbon-3', theme.ribbons[2])
-}
-
-function route() {
-  const hash = window.location.hash || '#countries'
-
-  document.querySelectorAll('.view').forEach(view => view.classList.add('hidden'))
-
-  if (hash.startsWith('#leagues/')) {
-    const countryId = hash.replace('#leagues/', '')
-    const country = COUNTRIES.find(c => c.id === countryId)
-    const countryName = country ? country.name : countryId
-
-    setCountryTheme(countryId) // <-- Applies Country Theme (DCCs)
-
-    document.getElementById('selected-country-title').textContent = `${countryName} Leagues`
-    renderLeagues(countryId)
-    document.getElementById('view-leagues').classList.remove('hidden')
-
-  } else if (hash.startsWith('#league/')) {
-    const leagueId = hash.replace('#league/', '')
-    const isNLS = leagueId === 'nl-s' || leagueId === 'nls'
-    document.getElementById('league-name-header').textContent = isNLS ? 'National League South' : leagueId.toUpperCase()
-    renderLeagueDashboard()
-    document.getElementById('view-league-dashboard').classList.remove('hidden')
-
-  } else if (hash.startsWith('#team/')) {
-    const teamId = hash.replace('#team/', '')
-
-    setTeamTheme(teamId) // <-- Applies Team Theme (DTCs)
-
-    document.getElementById('team-name-header').textContent = teamId === 'hemel' ? 'Hemel Hempstead Town FC' : teamId
-    renderTeamDashboard()
-    document.getElementById('view-team-dashboard').classList.remove('hidden')
-
-  } else {
-    setMainTheme() // <-- Applies Main Theme (MTC)
-
-    renderCountries()
-    document.getElementById('view-countries').classList.remove('hidden')
-  }
 }
 
 function renderCountries() {

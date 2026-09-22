@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-  <!-- Corner Ribbons placed at top of body for top-most z-index stacking -->
   <div class="corner-ribbon corner-ribbon-tl-1"></div>
   <div class="corner-ribbon corner-ribbon-tl-2"></div>
   <div class="corner-ribbon corner-ribbon-tl-3"></div>
@@ -17,30 +16,53 @@
   <div class="corner-ribbon corner-ribbon-tr-3"></div>
 
   <header class="navbar">
-    <a href="#" id="home-link" class="logo">tous</a>
-    <nav id="breadcrumbs" class="breadcrumbs"></nav>
+    <div class="nav-left">
+      <a href="#home" id="home-link">
+        <img src="./assets/TOUS.png" alt="Tous Logo" class="logo" />
+      </a>
+    </div>
+
+    <nav class="nav-menu">
+      <a href="#countries" class="nav-item">All Countries</a>
+      <a href="#favourites" class="nav-item">My Favourites</a>
+    </nav>
   </header>
 
-  <!-- Main Views Container -->
   <main id="app">
-    <!-- Countries View -->
+    <div id="view-home" class="view hidden">
+      <h1 class="page-title">Welcome to <span>Tous</span></h1>
+      
+      <div class="home-grid">
+        <div class="home-card">
+          <h2 class="home-card-title">About Us</h2>
+          <p class="home-card-text">
+            Tous is your interactive guide to global football. From household names, like Juventus, to local pub teams such as Musketeer FC, Tous can give you up to date information on a large number of worldwide sides.
+          </p>
+        </div>
+
+        <div class="home-card highlight-card">
+          <div class="badge">Random Page</div>
+          <h2 class="home-card-title" id="potd-title">Loading...</h2>
+          <p class="home-card-text" id="potd-desc">Discover a random page.</p>
+          <a href="#" id="potd-link" class="potd-btn">Visit Page &rarr;</a>
+        </div>
+      </div>
+    </div>
+
     <div id="view-countries" class="view hidden">
-      <h1 class="page-title">Select <span>Country</span></h1>
+      <h1 class="page-title">All <span>Countries</span></h1>
       <div id="country-grid" class="flag-grid"></div>
     </div>
 
-    <!-- Leagues View -->
     <div id="view-leagues" class="view hidden">
       <h1 class="page-title"><span id="selected-country-title">Leagues</span></h1>
     </div>
 
-    <!-- League Dashboard View -->
     <div id="view-league-dashboard" class="view hidden">
       <h1 class="page-title"><span id="league-name-header">League</span></h1>
       <div id="league-standings-table" class="standings-box"></div>
     </div>
 
-    <!-- Team Dashboard View -->
     <div id="view-team-dashboard" class="view hidden">
       <h1 class="page-title"><span id="team-name-header">Team</span></h1>
       <div id="team-recent-info" class="team-summary-box"></div>

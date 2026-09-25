@@ -373,6 +373,31 @@ const LEAGUES_BY_COUNTRY = {
       { id: 'alm', name: 'A-League Men' }
     ]
   },
+  austria: {
+    level1: [
+      { id: 'bd', name: 'Bundesliga' }
+    ],
+    level2: [
+      { id: 'z-l', name: '2. Liga', promotesTo: ['bd']}
+    ],
+    level3: [
+      { id: 'rl-o', name: 'Regionalliga Ost', promotesTo: ['z-l']},
+      { id: 'rl-n', name: 'Regionalliga Nord', promotesTo: ['z-l']},
+      { id: 'rl-s', name: 'Regionalliga Süd', promotesTo: ['z-l']},
+      { id: 'rl-w', name: 'Regionalliga West', promotesTo: ['z-l']}
+    ],
+    level4: [
+      { id: 'llbl', name: 'Landesliga Burgenland', promotesTo: ['rl-o']},
+      { id: 'e-ll', name: '1. Landesliga', promotesTo: ['rl-o']},
+      { id: 'wsl', name: 'Wiener Stadtliga', promotesTo: ['rl-o']},
+      { id: 'ool', name: 'OÖ Liga', promotesTo: ['rl-n']},
+      { id: 'sbl', name: 'Salzburger Liga', promotesTo: ['rl-n']},
+      { id: 'llsm', name: 'Landesliga Steiermark', promotesTo: ['rl-s']},
+      { id: 'kl', name: 'Kärtner Liga', promotesTo: ['rl-s']},
+      { id: 'rl-t', name: 'Regionalliga Tirol', promotesTo: ['rl-w']},
+      { id: 'elvb', name: 'Eliteliga Vorarlberg', promotesTo: ['rl-w']},
+    ],
+  },
   england: {
     level1: [
       { id: 'pl', name: 'Premier League'}

@@ -1,3 +1,5 @@
+import { createClient } from '@supabase/supabase-js'
+
 const COUNTRIES = [
   // A countries
   { id: 'afghanistan', name: 'Afghanistan' },
@@ -550,6 +552,47 @@ const TEAM_THEMES = {
   //            'team-id': { accent: '...', glow: '...', ribbons: ['light', 'base', 'dark'] }
 }
 
+const searchInput = document.getElementById('country-search-input')
+const popularContainer = document.getElementById('popular-countries-container')
+
+const supabaseUrl = 'https://uwvamhztdbksrbjbmomi.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3dmFtaHp0ZGJrc3JiamJtb21pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MzkzNTAsImV4cCI6MjEwNTUxNTM1MH0.tyvuiYamJY9_dPGC7Lb6ylDAJsJ34MYalCUZPw-Q0kE'
+export const supabase = createClient(supabaseUrl, supabaseKey)
+
+async function getLeagueTeams(leagueId) {
+  const { data: teams, error } = await supabase
+    .from('teams')
+    .select('id, name, primary_color, secondary_color, logo_url')
+    .eq('league_id', leagueId)
+
+  if (error) console.error(error)
+  return teams
+}
+
+if (searchInput) {
+  searchInput.addEventListener('input', (e) => {
+    const query = e.target.value.trim().toLowerCase()
+    
+    if (popularContainer) {
+      if (query.length > 0) {
+        popularContainer.classList.add('hidden')
+      } else {
+        popularContainer.classList.remove('hidden')
+      }
+    }
+
+    const countryCards = document.querySelectorAll('#country-grid .flag-card')
+    countryCards.forEach(card => {
+      const countryName = card.textContent.toLowerCase()
+      if (countryName.includes(query)) {
+        card.classList.remove('hidden')
+      } else {
+        card.classList.add('hidden')
+      }
+    })
+  })
+}
+
 function getRandomPage() {
   const pages = []
 
@@ -767,7 +810,6 @@ function renderLeagues(countryId) {
 
   const levelKeys = Object.keys(countryData)
 
-  // 3. Render SVG Canvas + HTML Tiers
   levelsWrapper.innerHTML = `
     <svg id="league-svg-canvas"></svg>
     ${levelKeys.map((levelKey, index) => {

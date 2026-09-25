@@ -48,18 +48,58 @@
         </div>
       </div>
     </div>
-
+    
     <div id="view-countries" class="view hidden">
       <h1 class="page-title">All <span>Countries</span></h1>
-        <div class="search-container" style="margin: 1.5rem auto; max-width: 400px;">
-          <input 
-            type="text" 
-            id="country-search-input" 
-            placeholder="Search countries..." 
-            oninput="filterCountries()"
-            style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid #444; background: #222; color: #fff; font-size: 1rem; outline: none;"
-          />
-        </div>
+      
+              <div id="popular-countries-container" class="popular-section">
+                <h2 class="level-header">Popular Countries</h2>
+                <div class="flag-grid">
+                  <div class="flag-card" onclick="window.location.hash='#leagues/england'">
+                    <div class="country-image-placeholder" style="height: 80px; background: #eee; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center; border: 1px dashed #ccc;">
+                      <span style="font-size: 0.8rem; color: #666;">Image Placeholder</span>
+                    </div>
+                    <div class="country-label">England</div>
+                  </div>
+
+                  <div class="flag-card" onclick="window.location.hash='#leagues/france'">
+                    <div class="country-image-placeholder" style="height: 80px; background: #eee; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center; border: 1px dashed #ccc;">
+                      <span style="font-size: 0.8rem; color: #666;">Image Placeholder</span>
+                    </div>
+                    <div class="country-label">France</div>
+                  </div>
+
+                  <div class="flag-card" onclick="window.location.hash='#leagues/germany'">
+                    <div class="country-image-placeholder" style="height: 80px; background: #eee; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center; border: 1px dashed #ccc;">
+                      <span style="font-size: 0.8rem; color: #666;">Image Placeholder</span>
+                    </div>
+                    <div class="country-label">Germany</div>
+                  </div>
+
+                  <div class="flag-card" onclick="window.location.hash='#leagues/italy'">
+                    <div class="country-image-placeholder" style="height: 80px; background: #eee; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center; border: 1px dashed #ccc;">
+                      <span style="font-size: 0.8rem; color: #666;">Image Placeholder</span>
+                    </div>
+                    <div class="country-label">Italy</div>
+                  </div>
+
+                  <div class="flag-card" onclick="window.location.hash='#leagues/spain'">
+                    <div class="country-image-placeholder" style="height: 80px; background: #eee; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center; border: 1px dashed #ccc;">
+                      <span style="font-size: 0.8rem; color: #666;">Image Placeholder</span>
+                    </div>
+                    <div class="country-label">Spain</div>
+                  </div>
+                </div>
+              </div>
+
+      <div class="search-container">
+        <input 
+          type="text" 
+          id="country-search-input" 
+          placeholder="Search countries..." 
+          oninput="filterCountries()"
+        />
+      </div>
       <div id="country-grid" class="flag-grid"></div>
     </div>
 
@@ -84,5 +124,6 @@
   </main>
 
   <script type="module" src="./main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </body>
 </html>

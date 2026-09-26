@@ -617,11 +617,14 @@ document.getElementById('score-suggestion-form')?.addEventListener('submit', asy
   }
 });
 
-// --- Admin Review Queue Logic ---
 async function fetchPendingSuggestions() {
   const container = document.getElementById('suggestions-list');
-  if (!container) return;
-  container.innerHTML = '<p>Loading suggestions...</p>';
+  if (!container) {
+    console.error('Missing #suggestions-list element in HTML!');
+    return;
+  }
+
+  container.innerHTML = '<p style="color: #888;">Loading suggestions...</p>';
 
   const { data: suggestions, error } = await supabase
     .from('score_suggestions')
@@ -629,26 +632,28 @@ async function fetchPendingSuggestions() {
     .eq('status', 'pending')
     .order('created_at', { ascending: false });
 
+  console.log('Admin queue fetch result:', { suggestions, error });
+
   if (error) {
-    container.innerHTML = `<p>Error loading items: ${error.message}</p>`;
+    container.innerHTML = `<p style="color: #ef4444;">Error loading queue: ${error.message}</p>`;
     return;
   }
 
   if (!suggestions || suggestions.length === 0) {
-    container.innerHTML = '<p>No pending score submissions.</p>';
+    container.innerHTML = '<p style="color: #888;">No pending score submissions found.</p>';
     return;
   }
 
   container.innerHTML = suggestions.map(item => `
-    <div class="card suggestion-card" id="suggestion-${item.id}">
+    <div class="card suggestion-card" id="suggestion-${item.id}" style="background: #1e1e1e; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
       <div class="suggestion-info">
         <strong>${item.home_team} ${item.suggested_home_score} - ${item.suggested_away_score} ${item.away_team}</strong>
-        ${item.proof_url ? `<br><a href="${item.proof_url}" target="_blank" rel="noopener">View Proof</a>` : ''}
-        <br><small>Submitted: ${new Date(item.created_at).toLocaleDateString()}</small>
+        ${item.proof_url ? `<br><a href="${item.proof_url}" target="_blank" rel="noopener" style="color: #60a5fa;">View Proof</a>` : ''}
+        <br><small style="color: #888;">Submitted: ${new Date(item.created_at).toLocaleDateString()}</small>
       </div>
       <div class="suggestion-actions" style="margin-top: 10px; display: flex; gap: 8px;">
-        <button onclick="reviewSuggestion('${item.id}', 'approved')" class="btn-approve">Approve</button>
-        <button onclick="reviewSuggestion('${item.id}', 'rejected')" class="btn-reject">Reject</button>
+        <button onclick="reviewSuggestion('${item.id}', 'approved')" style="background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">Approve</button>
+        <button onclick="reviewSuggestion('${item.id}', 'rejected')" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">Reject</button>
       </div>
     </div>
   `).join('');
@@ -771,67 +776,75 @@ function renderHome() {
 }
 
 function route() {
-  const hash = window.location.hash || '#home'
+  const hash = window.location.hash || '#home';
 
-  document.querySelectorAll('.view').forEach(view => view.classList.add('hidden'))
+  document.querySelectorAll('.view').forEach(view => view.classList.add('hidden'));
 
   if (hash === '#countries') {
-    setMainTheme()
-    renderCountries()
-    document.getElementById('view-countries').classList.remove('hidden')
+    setMainTheme();
+    renderCountries();
+    document.getElementById('view-countries')?.classList.remove('hidden');
 
   } else if (hash.startsWith('#leagues/')) {
-    const countryId = hash.replace('#leagues/', '')
-    const country = COUNTRIES.find(c => c.id === countryId)
-    const countryName = country ? country.name : countryId
+    const countryId = hash.replace('#leagues/', '');
+    const country = COUNTRIES.find(c => c.id === countryId);
+    const countryName = country ? country.name : countryId;
 
-    setCountryTheme(countryId)
-    document.getElementById('selected-country-title').textContent = `${countryName} Leagues`
-    renderLeagues(countryId)
-    document.getElementById('view-leagues').classList.remove('hidden')
+    setCountryTheme(countryId);
+    const titleEl = document.getElementById('selected-country-title');
+    if (titleEl) titleEl.textContent = `${countryName} Leagues`;
+    
+    renderLeagues(countryId);
+    document.getElementById('view-leagues')?.classList.remove('hidden');
 
   } else if (hash.startsWith('#league/')) {
-    const leagueId = hash.replace('#league/', '')
+    const leagueId = hash.replace('#league/', '');
     
-    let foundLeague = null
-    let foundCountryName = ''
+    let foundLeague = null;
+    let foundCountryName = '';
 
     for (const [countryId, countryData] of Object.entries(LEAGUES_BY_COUNTRY)) {
-      const allLeaguesInCountry = Object.values(countryData).flat()
-      const match = allLeaguesInCountry.find(l => l.id === leagueId)
+      const allLeaguesInCountry = Object.values(countryData).flat();
+      const match = allLeaguesInCountry.find(l => l.id === leagueId);
 
       if (match) {
-        foundLeague = match
-        const countryObj = COUNTRIES.find(c => c.id === countryId)
-        foundCountryName = countryObj ? countryObj.name : countryId
-        break
+        foundLeague = match;
+        const countryObj = COUNTRIES.find(c => c.id === countryId);
+        foundCountryName = countryObj ? countryObj.name : countryId;
+        break;
       }
     }
 
-    const leagueTitle = foundLeague ? `${foundLeague.name} (${foundCountryName})` : leagueId.toUpperCase()
-    document.getElementById('league-name-header').textContent = leagueTitle
+    const leagueTitle = foundLeague ? `${foundLeague.name} (${foundCountryName})` : leagueId.toUpperCase();
+    const headerEl = document.getElementById('league-name-header');
+    if (headerEl) headerEl.textContent = leagueTitle;
 
-    renderLeagueDashboard()
-    document.getElementById('view-league-dashboard').classList.remove('hidden')
+    renderLeagueDashboard();
+    document.getElementById('view-league-dashboard')?.classList.remove('hidden');
 
   } else if (hash.startsWith('#team/')) {
-    const teamId = hash.replace('#team/', '')
-    setTeamTheme(teamId)
-    document.getElementById('team-name-header').textContent = teamId === 'hemel' ? 'Hemel Hempstead Town FC' : teamId
-    renderTeamDashboard()
-    document.getElementById('view-team-dashboard').classList.remove('hidden')
+    const teamId = hash.replace('#team/', '');
+    setTeamTheme(teamId);
+    
+    const teamHeaderEl = document.getElementById('team-name-header');
+    if (teamHeaderEl) teamHeaderEl.textContent = teamId === 'hemel' ? 'Hemel Hempstead Town FC' : teamId;
+    
+    renderTeamDashboard();
+    document.getElementById('view-team-dashboard')?.classList.remove('hidden');
 
   } else if (hash === '#changelog') {
-    fetchChangelog()
-    document.getElementById('view-changelog').classList.remove('hidden')
+    setMainTheme();
+    fetchChangelog();
+    document.getElementById('view-changelog')?.classList.remove('hidden');
 
   } else if (hash === '#admin-queue') {
-    fetchPendingSuggestions()
-    document.getElementById('view-admin-queue').classList.remove('hidden')
+    setMainTheme();
+    fetchPendingSuggestions();
+    document.getElementById('view-admin-queue')?.classList.remove('hidden');
 
   } else {
-    renderHome()
-    document.getElementById('view-home').classList.remove('hidden')
+    renderHome();
+    document.getElementById('view-home')?.classList.remove('hidden');
   }
 }
 
@@ -1116,44 +1129,203 @@ function renderTeamDashboard() {
 window.addEventListener('hashchange', route)
 window.addEventListener('DOMContentLoaded', route)
 
-async function fetchChangelog() {
+let currentCategoryFilter = 'All';
+let rawChangelogData = [];
+
+window.fetchChangelog = async function() {
   const container = document.getElementById('changelog-timeline');
   if (!container) return;
-  
-  container.innerHTML = '<p>Loading updates...</p>';
+
+  container.innerHTML = '<p style="color: #888;">Loading updates...</p>';
 
   const { data: logs, error } = await supabase
     .from('changelog')
     .select('*')
     .eq('is_public', true)
+    .eq('is_deleted', false)
     .order('created_at', { ascending: false });
 
   if (error) {
-    container.innerHTML = `<p>Error loading changelog: ${error.message}</p>`;
+    container.innerHTML = `<p style="color: #ef4444;">Error loading changelog: ${error.message}</p>`;
     return;
   }
 
-  if (!logs || logs.length === 0) {
-    container.innerHTML = '<p>No updates logged yet.</p>';
+  rawChangelogData = logs || [];
+  renderFilteredChangelog();
+};
+
+function renderFilteredChangelog() {
+  const container = document.getElementById('changelog-timeline');
+  if (!container) return;
+
+  const isAdmin = document.getElementById('admin-bar')?.style.display !== 'none';
+  const postBtn = document.getElementById('admin-add-changelog-btn');
+  if (postBtn) postBtn.style.display = isAdmin ? 'inline-block' : 'none';
+
+  const filtered = currentCategoryFilter === 'All'
+    ? rawChangelogData
+    : rawChangelogData.filter(item => item.category === currentCategoryFilter);
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<p style="color: #888;">No updates found for category "${currentCategoryFilter}".</p>`;
     return;
   }
 
-  container.innerHTML = logs.map(item => `
-    <div class="timeline-item">
-      <div class="timeline-badge badge-${item.category.toLowerCase().replace(/\s+/g, '-')}">
-        ${item.category}
+  container.innerHTML = filtered.map(item => `
+    <div class="timeline-item" id="log-card-${item.id}" style="padding: 1rem; border-bottom: 1px solid #333; margin-bottom: 1rem; background: #181818; border-radius: 8px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <span class="timeline-badge" style="font-weight: bold; color: var(--country-accent, #60a5fa); text-transform: uppercase; font-size: 0.75rem;">
+          ${item.category}
+        </span>
+        ${isAdmin ? `
+          <div class="admin-edit-actions" style="display: flex; gap: 8px;">
+            <button onclick="editChangelogEntry('${item.id}')" style="background: #3b82f6; color: white; border: none; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; cursor: pointer;">Edit</button>
+            <button onclick="deleteChangelogEntry('${item.id}')" style="background: #ef4444; color: white; border: none; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; cursor: pointer;">Delete</button>
+          </div>
+        ` : ''}
       </div>
-      <div class="timeline-content">
-        <div class="timeline-header">
-          <h3>${item.title}</h3>
-          <span class="timeline-date">${new Date(item.created_at).toLocaleDateString()}</span>
+
+      <div class="timeline-content" style="margin-top: 0.5rem;">
+        <div class="timeline-header" style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="margin: 0.25rem 0; color: #fff;">${item.title}</h3>
+          <span class="timeline-date" style="font-size: 0.85rem; color: #888;">${new Date(item.created_at).toLocaleDateString()}</span>
         </div>
-        <p>${item.description}</p>
-        ${item.version ? `<span class="version-tag">${item.version}</span>` : ''}
+        <p style="margin: 0.5rem 0; color: #ccc; font-size: 0.95rem;">${item.description}</p>
+        ${item.version ? `<span class="version-tag" style="background: #2a2a2a; color: #aaa; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem;">${item.version}</span>` : ''}
       </div>
     </div>
   `).join('');
 }
+
+window.filterChangelog = function(category) {
+  currentCategoryFilter = category;
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    if (btn.getAttribute('data-cat') === category) {
+      btn.classList.add('active');
+      btn.style.borderColor = 'var(--country-accent, #60a5fa)';
+    } else {
+      btn.classList.remove('active');
+      btn.style.borderColor = 'transparent';
+    }
+  });
+  renderFilteredChangelog();
+};
+
+// --- Modal & Editing Logic ---
+window.openChangelogModal = function() {
+  document.getElementById('changelog-modal').style.display = 'block';
+};
+
+window.closeChangelogModal = function() {
+  document.getElementById('changelog-modal').style.display = 'none';
+  document.getElementById('changelog-form').reset();
+  document.getElementById('changelog-edit-id').value = '';
+  document.getElementById('changelog-modal-title').textContent = 'Post Changelog Entry';
+  document.getElementById('changelog-submit-btn').textContent = 'Publish Entry';
+};
+
+window.editChangelogEntry = function(id) {
+  const item = rawChangelogData.find(x => x.id === id);
+  if (!item) return;
+
+  document.getElementById('changelog-edit-id').value = item.id;
+  document.getElementById('changelog-title').value = item.title;
+  document.getElementById('changelog-category').value = item.category;
+  document.getElementById('changelog-version').value = item.version || '';
+  document.getElementById('changelog-description').value = item.description;
+
+  document.getElementById('changelog-modal-title').textContent = 'Edit Changelog Entry';
+  document.getElementById('changelog-submit-btn').textContent = 'Update Entry';
+  openChangelogModal();
+};
+
+window.deleteChangelogEntry = async function(id) {
+  if (!confirm('Are you sure you want to remove this entry? You can undo this immediately after.')) return;
+
+  const { error } = await supabase
+    .from('changelog')
+    .update({ is_deleted: true })
+    .eq('id', id);
+
+  if (error) {
+    alert('Failed to delete entry: ' + error.message);
+  } else {
+    // Show instant undo prompt
+    showUndoToast(id);
+    fetchChangelog();
+  }
+};
+
+function showUndoToast(deletedId) {
+  let toast = document.getElementById('undo-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'undo-toast';
+    toast.style.cssText = 'position: fixed; bottom: 20px; right: 20px; background: #222; color: #fff; padding: 12px 20px; border-radius: 8px; border: 1px solid #444; z-index: 10000; display: flex; gap: 12px; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.5);';
+    document.body.appendChild(toast);
+  }
+
+  toast.innerHTML = `
+    <span>Entry removed.</span>
+    <button onclick="undoDelete('${deletedId}')" style="background: var(--country-accent, #3b82f6); color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-weight: bold;">Undo</button>
+  `;
+  toast.style.display = 'flex';
+
+  setTimeout(() => {
+    if (toast) toast.style.display = 'none';
+  }, 6000);
+}
+
+window.undoDelete = async function(id) {
+  const { error } = await supabase
+    .from('changelog')
+    .update({ is_deleted: false })
+    .eq('id', id);
+
+  if (error) {
+    alert('Failed to undo deletion: ' + error.message);
+  } else {
+    const toast = document.getElementById('undo-toast');
+    if (toast) toast.style.display = 'none';
+    fetchChangelog();
+  }
+};
+
+// Handle Form Submission (Create or Update)
+document.getElementById('changelog-form')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const editId = document.getElementById('changelog-edit-id').value;
+  const title = document.getElementById('changelog-title').value;
+  const category = document.getElementById('changelog-category').value;
+  const version = document.getElementById('changelog-version').value;
+  const description = document.getElementById('changelog-description').value;
+
+  if (editId) {
+    const { error } = await supabase
+      .from('changelog')
+      .update({ title, category, version, description })
+      .eq('id', editId);
+
+    if (error) {
+      alert('Update failed: ' + error.message);
+    } else {
+      closeChangelogModal();
+      fetchChangelog();
+    }
+  } else {
+    const { error } = await supabase
+      .from('changelog')
+      .insert([{ title, category, version, description, is_public: true }]);
+
+    if (error) {
+      alert('Posting failed: ' + error.message);
+    } else {
+      closeChangelogModal();
+      fetchChangelog();
+    }
+  }
+});
 
 // sign up
 let isSignUpMode = false;

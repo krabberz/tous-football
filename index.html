@@ -160,18 +160,77 @@
         </div>
       </div>
 
-        <section id="view-admin-queue" class="view-section" style="display: none;">
-          <h2>Pending Score Suggestions</h2>
-          <div id="suggestions-list" class="queue-container">
+        <section id="view-changelog" class="view hidden">
+          <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+              <h2>Changelog & Updates</h2>
+              
+              <button id="admin-add-changelog-btn" onclick="openChangelogModal()" class="btn-primary" style="display: none;">
+                + Post Update
+              </button>
+            </div>
+
+            <div class="filter-bar" style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+              <button onclick="filterChangelog('All')" class="btn-sm filter-btn active" data-cat="All">All</button>
+              <button onclick="filterChangelog('Feature')" class="btn-sm filter-btn" data-cat="Feature">Features</button>
+              <button onclick="filterChangelog('Data Update')" class="btn-sm filter-btn" data-cat="Data Update">Match Results</button>
+              <button onclick="filterChangelog('League Added')" class="btn-sm filter-btn" data-cat="League Added">Leagues</button>
+              <button onclick="filterChangelog('Team Added')" class="btn-sm filter-btn" data-cat="Team Added">Teams</button>
+              <button onclick="filterChangelog('Fix')" class="btn-sm filter-btn" data-cat="Fix">Fixes</button>
+            </div>
+
+            <div id="changelog-timeline" class="timeline"></div>
           </div>
         </section>
 
-        <section id="view-changelog" class="view-section" style="display: none;">
-          <div class="changelog-header">
-            <h2>Site Updates & Changelog</h2>
-            <p>Track recent match data additions, rule updates, and platform features.</p>
+        <div id="changelog-modal" class="modal" style="display: none;">
+          <div class="modal-content">
+            <span class="close-btn" onclick="closeChangelogModal()">&times;</span>
+            <h2 id="changelog-modal-title" style="margin-bottom: 1.5rem;">Post Changelog Entry</h2>
+
+            <form id="changelog-form">
+              <input type="hidden" id="changelog-edit-id" value="" />
+
+              <div class="form-group">
+                <label for="changelog-title">Title</label>
+                <input type="text" id="changelog-title" required placeholder="e.g. Added Premier League Standings" />
+              </div>
+
+              <div class="form-group">
+                <label for="changelog-category">Category</label>
+                <select id="changelog-category" required style="width: 100%; padding: 8px; background: #222; color: #fff; border: 1px solid #444; border-radius: 4px;">
+                  <option value="Feature">Feature</option>
+                  <option value="Data Update">Data Update (Match Result)</option>
+                  <option value="League Added">League Added</option>
+                  <option value="Team Added">Team Added</option>
+                  <option value="Fix">Fix</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="changelog-version">Version (Optional)</label>
+                <input type="text" id="changelog-version" placeholder="v1.2.0" />
+              </div>
+
+              <div class="form-group">
+                <label for="changelog-date">Date</label>
+                <input type="date" id="changelog-date" required style="width: 100%; padding: 8px; background: #222; color: #fff; border: 1px solid #444; border-radius: 4px;" />
+              </div>
+              
+              <div class="form-group">
+                <label for="changelog-description">Description</label>
+                <textarea id="changelog-description" required rows="4" style="width: 100%; padding: 8px; background: #222; color: #fff; border: 1px solid #444; border-radius: 4px;"></textarea>
+              </div>
+
+              <button type="submit" id="changelog-submit-btn" class="btn-primary">Publish Entry</button>
+            </form>
           </div>
-          <div id="changelog-timeline" class="timeline-container">
+        </div>
+
+        <section id="view-admin-queue" class="view hidden">
+          <div class="container">
+            <h2>Score Submission Queue</h2>
+            <div id="suggestions-list" class="suggestions-list"></div>
           </div>
         </section>
 

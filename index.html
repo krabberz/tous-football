@@ -25,7 +25,13 @@
     <nav class="nav-menu">
       <a href="#countries" class="nav-item">All Countries</a>
       <a href="#favourites" class="nav-item">My Favourites</a>
+      <a href="#changelog" class="nav-item">Changelog</a>
     </nav>
+
+    <div class="nav-right">
+      <button id="auth-btn" class="nav-btn" onclick="openAuthModal()">Login</button>
+      <button id="admin-btn" class="nav-btn" style="display: none;" onclick="window.location.hash='#admin-queue'">Admin Panel</button>
+    </div>
   </header>
 
   <main id="app">
@@ -121,9 +127,94 @@
       <h1 class="page-title"><span id="team-name-header">Team</span></h1>
       <div id="team-recent-info" class="team-summary-box"></div>
     </div>
+
+      <div id="score-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+          <span class="close-btn" onclick="closeScoreModal()">&times;</span>
+          <h2>Suggest Result</h2>
+          <form id="score-suggestion-form">
+            <div class="form-group">
+              <label for="home-team-input">Home Team</label>
+              <input type="text" id="home-team-input" required placeholder="e.g. Arsenal" />
+            </div>
+            <div class="form-group">
+              <label for="away-team-input">Away Team</label>
+              <input type="text" id="away-team-input" required placeholder="e.g. Chelsea" />
+            </div>
+            <div class="form-row" style="display: flex; gap: 10px;">
+              <div class="form-group" style="flex: 1;">
+                <label for="home-score-input">Home Score</label>
+                <input type="number" id="home-score-input" min="0" required />
+              </div>
+              <div class="form-group" style="flex: 1;">
+                <label for="away-score-input">Away Score</label>
+                <input type="number" id="away-score-input" min="0" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="proof-url-input">Proof Link (Optional)</label>
+              <input type="url" id="proof-url-input" placeholder="https://..." />
+            </div>
+            <button type="submit" class="btn-primary">Submit Score</button>
+          </form>
+        </div>
+      </div>
+
+        <section id="view-admin-queue" class="view-section" style="display: none;">
+          <h2>Pending Score Suggestions</h2>
+          <div id="suggestions-list" class="queue-container">
+          </div>
+        </section>
+
+        <section id="view-changelog" class="view-section" style="display: none;">
+          <div class="changelog-header">
+            <h2>Site Updates & Changelog</h2>
+            <p>Track recent match data additions, rule updates, and platform features.</p>
+          </div>
+          <div id="changelog-timeline" class="timeline-container">
+          </div>
+        </section>
+
+        <div id="admin-bar" class="admin-bar" style="display: none;">
+          <span>Logged in as <strong>Admin</strong></span>
+          <div class="admin-actions">
+            <button onclick="window.location.hash='#admin-queue'" class="btn-sm">Score Queue</button>
+            <button onclick="handleLogout()" class="btn-sm btn-danger">Logout</button>
+          </div>
+        </div>
+
+        <div id="auth-modal" class="modal" style="display: none;">
+          <div class="modal-content">
+            <span class="close-btn" onclick="closeAuthModal()">&times;</span>
+            <h2 id="auth-modal-title" style="margin-bottom: 1.5rem;">Log In</h2>
+
+            <form id="auth-form">
+              <div class="form-group" id="auth-username-group" style="display: none;">
+                <label for="auth-username">Username</label>
+                <input type="text" id="auth-username" placeholder="johndoe" />
+              </div>
+
+              <div class="form-group">
+                <label for="auth-email">Email</label>
+                <input type="email" id="auth-email" required placeholder="admin@example.com" />
+              </div>
+
+              <div class="form-group">
+                <label for="auth-password">Password</label>
+                <input type="password" id="auth-password" required placeholder="••••••••" />
+              </div>
+
+              <button type="submit" id="auth-submit-btn" class="btn-primary">Log In</button>
+            </form>
+
+            <div style="margin-top: 1rem; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+              <span id="auth-toggle-text">Don't have an account?</span>
+              <a href="#" id="auth-toggle-btn" onclick="toggleAuthMode(event)" style="color: var(--country-accent); font-weight: 600; text-decoration: underline; margin-left: 0.25rem;">Sign Up</a>
+            </div>
+          </div>
+        </div>
   </main>
 
   <script type="module" src="./main.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </body>
 </html>

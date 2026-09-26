@@ -262,7 +262,6 @@ const COUNTRIES = [
   // Z countries
   { id: 'zambia', name: 'Zambia' },
   { id: 'zimbabwe', name: 'Zimbabwe' }
-
 ]
 
 const LEAGUES_BY_COUNTRY = {
@@ -525,7 +524,6 @@ const MTC_THEME = {
 }
 
 // put all nation colours here 
-// ribbons: light shade, base colour (same as accent), dark shade)
 const COUNTRY_THEMES = {
   england: {
     accent: '#ef4444',
@@ -557,8 +555,6 @@ const COUNTRY_THEMES = {
     glow: 'rgba(2, 132, 199, 0.3)',
     ribbons: ['#38bdf8', '#0284c7', '#0369a1']
   }
-  // add more using: 
-  //            nation: { accent: '...', glow: '...', ribbons: ['light', 'base', 'dark'] }
 }
 
 // put all team colours here
@@ -573,8 +569,6 @@ const TEAM_THEMES = {
     glow: 'rgba(37, 99, 235, 0.3)',
     ribbons: ['#60a5fa', '#2563eb', '#1e40af']
   }
-  // add more using: 
-  //            'team-id': { accent: '...', glow: '...', ribbons: ['light', 'base', 'dark'] }
 }
 
 const searchInput = document.getElementById('country-search-input')
@@ -583,6 +577,112 @@ const popularContainer = document.getElementById('popular-countries-container')
 const supabaseUrl = 'https://uwvamhztdbksrbjbmomi.supabase.co'
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3dmFtaHp0ZGJrc3JiamJtb21pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MzkzNTAsImV4cCI6MjEwNTUxNTM1MH0.tyvuiYamJY9_dPGC7Lb6ylDAJsJ34MYalCUZPw-Q0kE'
 export const supabase = createClient(supabaseUrl, supabaseKey)
+
+window.openScoreModal = function() {
+  document.getElementById('score-modal').style.display = 'block';
+};
+
+window.closeScoreModal = function() {
+  document.getElementById('score-modal').style.display = 'none';
+  document.getElementById('score-suggestion-form').reset();
+};
+
+// Handle Public Submission
+document.getElementById('score-suggestion-form')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const homeTeam = document.getElementById('home-team-input').value;
+  const awayTeam = document.getElementById('away-team-input').value;
+  const homeScore = parseInt(document.getElementById('home-score-input').value, 10);
+  const awayScore = parseInt(document.getElementById('away-score-input').value, 10);
+  const proofUrl = document.getElementById('proof-url-input').value;
+
+  const { data, error } = await supabase
+    .from('score_suggestions')
+    .insert([
+      { 
+        home_team: homeTeam, 
+        away_team: awayTeam, 
+        suggested_home_score: homeScore, 
+        suggested_away_score: awayScore, 
+        proof_url: proofUrl 
+      }
+    ]);
+
+  if (error) {
+    alert('Failed to submit score: ' + error.message);
+  } else {
+    alert('Thank you! Your score suggestion has been submitted for review.');
+    closeScoreModal();
+  }
+});
+
+// --- Admin Review Queue Logic ---
+async function fetchPendingSuggestions() {
+  const container = document.getElementById('suggestions-list');
+  if (!container) return;
+  container.innerHTML = '<p>Loading suggestions...</p>';
+
+  const { data: suggestions, error } = await supabase
+    .from('score_suggestions')
+    .select('*')
+    .eq('status', 'pending')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    container.innerHTML = `<p>Error loading items: ${error.message}</p>`;
+    return;
+  }
+
+  if (!suggestions || suggestions.length === 0) {
+    container.innerHTML = '<p>No pending score submissions.</p>';
+    return;
+  }
+
+  container.innerHTML = suggestions.map(item => `
+    <div class="card suggestion-card" id="suggestion-${item.id}">
+      <div class="suggestion-info">
+        <strong>${item.home_team} ${item.suggested_home_score} - ${item.suggested_away_score} ${item.away_team}</strong>
+        ${item.proof_url ? `<br><a href="${item.proof_url}" target="_blank" rel="noopener">View Proof</a>` : ''}
+        <br><small>Submitted: ${new Date(item.created_at).toLocaleDateString()}</small>
+      </div>
+      <div class="suggestion-actions" style="margin-top: 10px; display: flex; gap: 8px;">
+        <button onclick="reviewSuggestion('${item.id}', 'approved')" class="btn-approve">Approve</button>
+        <button onclick="reviewSuggestion('${item.id}', 'rejected')" class="btn-reject">Reject</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+window.reviewSuggestion = async function(id, newStatus) {
+  const user = supabase.auth.user ? supabase.auth.user() : (await supabase.auth.getUser()).data.user;
+
+  const { error } = await supabase
+    .from('score_suggestions')
+    .update({ 
+      status: newStatus, 
+      reviewed_at: new Date(),
+      reviewed_by: user?.id 
+    })
+    .eq('id', id);
+
+  if (error) {
+    alert(`Error updating suggestion: ${error.message}`);
+  } else {
+    if (newStatus === 'approved') {
+      const card = document.getElementById(`suggestion-${id}`);
+      const infoText = card ? card.querySelector('strong').innerText : 'Match Score';
+      
+      await supabase.from('changelog').insert([{
+        category: 'Data Update',
+        title: 'Match Result Approved',
+        description: `Approved score submission: ${infoText}`
+      }]);
+    }
+    
+    fetchPendingSuggestions();
+  }
+};
 
 async function getLeagueTeams(leagueId) {
   const { data: teams, error } = await supabase
@@ -621,7 +721,6 @@ if (searchInput) {
 function getRandomPage() {
   const pages = []
 
-  // 1. Add all Country pages dynamically from COUNTRIES
   COUNTRIES.forEach(c => {
     pages.push({
       title: `${c.name} Leagues`,
@@ -630,7 +729,6 @@ function getRandomPage() {
     })
   })
 
-  // 2. Add all League pages dynamically from LEAGUES_BY_COUNTRY
   Object.keys(LEAGUES_BY_COUNTRY).forEach(countryId => {
     const country = COUNTRIES.find(c => c.id === countryId)
     const countryName = country ? country.name : countryId
@@ -645,7 +743,6 @@ function getRandomPage() {
     })
   })
 
-  // 3. Add all Team pages dynamically from TEAM_THEMES
   Object.keys(TEAM_THEMES).forEach(teamId => {
     pages.push({
       title: teamId.charAt(0).toUpperCase() + teamId.slice(1),
@@ -654,7 +751,6 @@ function getRandomPage() {
     })
   })
 
-  // Pick a random entry from the dynamic pool
   return pages[Math.floor(Math.random() * pages.length)]
 }
 
@@ -677,17 +773,14 @@ function renderHome() {
 function route() {
   const hash = window.location.hash || '#home'
 
-  // Hide all views first
   document.querySelectorAll('.view').forEach(view => view.classList.add('hidden'))
 
   if (hash === '#countries') {
-    // 1. All Countries View
     setMainTheme()
     renderCountries()
     document.getElementById('view-countries').classList.remove('hidden')
 
   } else if (hash.startsWith('#leagues/')) {
-    // 2. Leagues View
     const countryId = hash.replace('#leagues/', '')
     const country = COUNTRIES.find(c => c.id === countryId)
     const countryName = country ? country.name : countryId
@@ -698,10 +791,8 @@ function route() {
     document.getElementById('view-leagues').classList.remove('hidden')
 
   } else if (hash.startsWith('#league/')) {
-    // 3. League Dashboard View
     const leagueId = hash.replace('#league/', '')
     
-    // Look up league object and country name dynamically
     let foundLeague = null
     let foundCountryName = ''
 
@@ -724,15 +815,21 @@ function route() {
     document.getElementById('view-league-dashboard').classList.remove('hidden')
 
   } else if (hash.startsWith('#team/')) {
-    // 4. Team Dashboard View
     const teamId = hash.replace('#team/', '')
     setTeamTheme(teamId)
     document.getElementById('team-name-header').textContent = teamId === 'hemel' ? 'Hemel Hempstead Town FC' : teamId
     renderTeamDashboard()
     document.getElementById('view-team-dashboard').classList.remove('hidden')
 
+  } else if (hash === '#changelog') {
+    fetchChangelog()
+    document.getElementById('view-changelog').classList.remove('hidden')
+
+  } else if (hash === '#admin-queue') {
+    fetchPendingSuggestions()
+    document.getElementById('view-admin-queue').classList.remove('hidden')
+
   } else {
-    // 5. Default Homepage View (#home, #, or unknown routes)
     renderHome()
     document.getElementById('view-home').classList.remove('hidden')
   }
@@ -765,10 +862,8 @@ function renderCountries() {
   const searchInput = document.getElementById('country-search-input')
   if (!container) return
 
-  // 1. Reset search input value when rendering
   if (searchInput) searchInput.value = ''
 
-  // 2. Render cards with normalized data-name attributes
   container.innerHTML = COUNTRIES.map(c => `
     <div class="flag-card" data-name="${c.name.toLowerCase()}" onclick="window.location.hash='#leagues/${c.id}'">
       <div class="country-image-placeholder" style="height: 80px; background: #eee; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center; border: 1px dashed #ccc;">
@@ -778,7 +873,6 @@ function renderCountries() {
     </div>
   `).join('')
 
-  // 3. Attach input event listener directly (bypasses window scope issues)
   if (searchInput && !searchInput.dataset.hasListener) {
     searchInput.addEventListener('input', (e) => {
       const query = e.target.value.toLowerCase().trim()
@@ -793,12 +887,10 @@ function renderCountries() {
         }
       })
     })
-    // Flag to prevent adding multiple listeners if renderCountries runs again
     searchInput.dataset.hasListener = 'true'
   }
 }
 
-// search
 function filterCountries() {
   const query = document.getElementById('country-search-input').value.toLowerCase().trim()
   const cards = document.querySelectorAll('#country-grid .flag-card')
@@ -806,9 +898,9 @@ function filterCountries() {
   cards.forEach(card => {
     const countryName = card.getAttribute('data-name')
     if (countryName.includes(query)) {
-      card.style.display = '' // Show card
+      card.style.display = ''
     } else {
-      card.style.display = 'none' // Hide card
+      card.style.display = 'none'
     }
   })
 }
@@ -908,7 +1000,6 @@ function drawConnections() {
       const x2 = parentRect.left + parentRect.width / 2 - wrapperRect.left + wrapper.scrollLeft
       const y2 = parentRect.bottom - wrapperRect.top + wrapper.scrollTop
 
-      // Store source and target IDs on line for hover tracing
       svgContent += `
         <line 
           x1="${x1}" y1="${y1}" 
@@ -922,8 +1013,6 @@ function drawConnections() {
   })
 
   svg.innerHTML = svgContent
-
-  // Attach hover listeners after lines are drawn
   attachHoverHighlighting()
 }
 
@@ -945,10 +1034,8 @@ function highlightPromotionPath(currentLeagueId) {
   const wrapper = document.getElementById('dynamic-levels-wrapper')
   if (!wrapper) return
 
-  // Dim non-matching lines slightly for better contrast
   wrapper.classList.add('lines-hovered')
 
-  // Recursively find and highlight only upward promotion lines
   function traceUpwards(leagueId) {
     const card = document.getElementById(`league-${leagueId}`)
     if (!card) return
@@ -958,12 +1045,10 @@ function highlightPromotionPath(currentLeagueId) {
 
     const targetIds = targetsStr.split(',').filter(Boolean)
     targetIds.forEach(targetId => {
-      // Find connecting SVG line from current league up to target
       const line = wrapper.querySelector(`line[data-from="${leagueId}"][data-to="${targetId}"]`)
       if (line) {
         line.classList.add('highlight-white')
       }
-      // Continue tracing upward if target promotes further
       traceUpwards(targetId)
     })
   }
@@ -1030,3 +1115,186 @@ function renderTeamDashboard() {
 
 window.addEventListener('hashchange', route)
 window.addEventListener('DOMContentLoaded', route)
+
+async function fetchChangelog() {
+  const container = document.getElementById('changelog-timeline');
+  if (!container) return;
+  
+  container.innerHTML = '<p>Loading updates...</p>';
+
+  const { data: logs, error } = await supabase
+    .from('changelog')
+    .select('*')
+    .eq('is_public', true)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    container.innerHTML = `<p>Error loading changelog: ${error.message}</p>`;
+    return;
+  }
+
+  if (!logs || logs.length === 0) {
+    container.innerHTML = '<p>No updates logged yet.</p>';
+    return;
+  }
+
+  container.innerHTML = logs.map(item => `
+    <div class="timeline-item">
+      <div class="timeline-badge badge-${item.category.toLowerCase().replace(/\s+/g, '-')}">
+        ${item.category}
+      </div>
+      <div class="timeline-content">
+        <div class="timeline-header">
+          <h3>${item.title}</h3>
+          <span class="timeline-date">${new Date(item.created_at).toLocaleDateString()}</span>
+        </div>
+        <p>${item.description}</p>
+        ${item.version ? `<span class="version-tag">${item.version}</span>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+// sign up
+let isSignUpMode = false;
+window.openAuthModal = function() {
+  document.getElementById('auth-modal').style.display = 'block';
+};
+
+window.closeAuthModal = function() {
+  document.getElementById('auth-modal').style.display = 'none';
+  document.getElementById('auth-form').reset();
+  isSignUpMode = false;
+  
+  // Reset modal UI back to default Log In mode
+  const title = document.getElementById('auth-modal-title');
+  const submitBtn = document.getElementById('auth-submit-btn');
+  const toggleText = document.getElementById('auth-toggle-text');
+  const toggleBtn = document.getElementById('auth-toggle-btn');
+  const usernameGroup = document.getElementById('auth-username-group');
+  const usernameInput = document.getElementById('auth-username');
+
+  if (title) title.textContent = 'Log In';
+  if (submitBtn) submitBtn.textContent = 'Log In';
+  if (toggleText) toggleText.textContent = "Don't have an account?";
+  if (toggleBtn) toggleBtn.textContent = 'Sign Up';
+  if (usernameGroup) usernameGroup.style.display = 'none';
+  if (usernameInput) usernameInput.removeAttribute('required');
+};
+
+window.toggleAuthMode = function(e) {
+  if (e) e.preventDefault();
+  isSignUpMode = !isSignUpMode;
+
+  const title = document.getElementById('auth-modal-title');
+  const submitBtn = document.getElementById('auth-submit-btn');
+  const toggleText = document.getElementById('auth-toggle-text');
+  const toggleBtn = document.getElementById('auth-toggle-btn');
+  const usernameGroup = document.getElementById('auth-username-group');
+  const usernameInput = document.getElementById('auth-username');
+
+  if (isSignUpMode) {
+    if (title) title.textContent = 'Create Account';
+    if (submitBtn) submitBtn.textContent = 'Sign Up';
+    if (toggleText) toggleText.textContent = 'Already have an account?';
+    if (toggleBtn) toggleBtn.textContent = 'Log In';
+    if (usernameGroup) usernameGroup.style.display = 'block';
+    if (usernameInput) usernameInput.setAttribute('required', 'true');
+  } else {
+    if (title) title.textContent = 'Log In';
+    if (submitBtn) submitBtn.textContent = 'Log In';
+    if (toggleText) toggleText.textContent = "Don't have an account?";
+    if (toggleBtn) toggleBtn.textContent = 'Sign Up';
+    if (usernameGroup) usernameGroup.style.display = 'none';
+    if (usernameInput) usernameInput.removeAttribute('required');
+  }
+};
+
+document.getElementById('auth-form')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const email = document.getElementById('auth-email').value;
+  const password = document.getElementById('auth-password').value;
+
+  if (isSignUpMode) {
+    const username = document.getElementById('auth-username').value;
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          username: username
+        }
+      }
+    });
+
+    if (error) {
+      alert('Sign up failed: ' + error.message);
+    } else {
+      alert('Account created! If email confirmation is enabled in Supabase, check your inbox. Otherwise, click Log In.');
+      closeAuthModal();
+    }
+  } else {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) {
+      alert('Authentication failed: ' + error.message);
+    } else {
+      closeAuthModal();
+      checkAdminStatus();
+    }
+  }
+});
+
+window.handleLogout = async function() {
+  await supabase.auth.signOut();
+  updateAdminUI(false);
+  alert('Logged out successfully.');
+};
+
+async function checkAdminStatus() {
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    updateAdminUI(false);
+    return false;
+  }
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+
+  const isAdmin = profile?.role === 'admin';
+  updateAdminUI(isAdmin);
+  return isAdmin;
+}
+
+function updateAdminUI(isAdmin) {
+  const adminBtn = document.getElementById('admin-btn');
+  const adminBar = document.getElementById('admin-bar');
+  const authBtn = document.getElementById('auth-btn');
+
+  if (isAdmin) {
+    if (adminBtn) adminBtn.style.display = 'inline-block';
+    if (adminBar) adminBar.style.display = 'flex';
+    if (authBtn) authBtn.style.display = 'none';
+  } else {
+    if (adminBtn) adminBtn.style.display = 'none';
+    if (adminBar) adminBar.style.display = 'none';
+    if (authBtn) authBtn.style.display = 'inline-block';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  checkAdminStatus();
+  
+  supabase.auth.onAuthStateChange((event, session) => {
+    checkAdminStatus();
+  });
+});

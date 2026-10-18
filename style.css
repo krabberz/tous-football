@@ -676,3 +676,14 @@ tbody tr:hover {
 .btn-primary:hover {
   opacity: 0.9;
 }
+
+.team-summary-box {
+  background: var(--bg-slate-card);
+  border: 1px solid var(--border-slate);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  padding: 2rem;
+  min-height: 300px;
+  max-height: 700px;
+  overflow-y: auto;
+}

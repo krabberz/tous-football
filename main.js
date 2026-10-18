@@ -31,7 +31,6 @@ const COUNTRIES = [
   { id: 'bolivia', name: 'Bolivia' },
   { id: 'bosnia', name: 'Bosnia and Herzegovina' },
   { id: 'botswana', name: 'Botswana' },
-  // { id: 'bougainville', name: 'Bougainville' },
   { id: 'brazil', name: 'Brazil' },
   { id: 'bvi', name: 'British Virgin Islands' },
   { id: 'brunei', name: 'Brunei' },
@@ -137,7 +136,7 @@ const COUNTRIES = [
   { id: 'liberia', name: 'Liberia' },
   { id: 'libya', name: 'Libya' },
   { id: 'liechtenstein', name: 'Liechtenstein' },
-  { id: 'lithuania', name: 'Luxembourg' },
+  { id: 'lithuania', name: 'Lithuania' },
   { id: 'luxembourg', name: 'Luxembourg' },
 
   // M countries
@@ -516,14 +515,12 @@ const LEAGUES_BY_COUNTRY = {
   }
 }
 
-// main colour
 const MTC_THEME = {
   accent: '#4A4A4A',
   glow: 'rgba(74, 74, 74, 0.3)',
   ribbons: ['#6A6A6A', '#4A4A4A', '#2A2A2A']
 }
 
-// put all nation colours here 
 const COUNTRY_THEMES = {
   england: {
     accent: '#ef4444',
@@ -557,7 +554,6 @@ const COUNTRY_THEMES = {
   }
 }
 
-// put all team colours here
 const TEAM_THEMES = {
   'arsenal': {
     accent: '#dc2626',
@@ -631,8 +627,6 @@ async function fetchPendingSuggestions() {
     .select('*')
     .eq('status', 'pending')
     .order('created_at', { ascending: false });
-
-  console.log('Admin queue fetch result:', { suggestions, error });
 
   if (error) {
     container.innerHTML = `<p style="color: #ef4444;">Error loading queue: ${error.message}</p>`;
@@ -791,6 +785,7 @@ function route() {
     const countryName = country ? country.name : countryId;
 
     setCountryTheme(countryId);
+    
     const titleEl = document.getElementById('selected-country-title');
     if (titleEl) titleEl.textContent = `${countryName} Leagues`;
     
@@ -801,6 +796,7 @@ function route() {
     const leagueId = hash.replace('#league/', '');
     
     let foundLeague = null;
+    let foundCountryId = '';
     let foundCountryName = '';
 
     for (const [countryId, countryData] of Object.entries(LEAGUES_BY_COUNTRY)) {
@@ -809,10 +805,17 @@ function route() {
 
       if (match) {
         foundLeague = match;
+        foundCountryId = countryId;
         const countryObj = COUNTRIES.find(c => c.id === countryId);
         foundCountryName = countryObj ? countryObj.name : countryId;
         break;
       }
+    }
+
+    if (foundCountryId) {
+      setCountryTheme(foundCountryId);
+    } else {
+      setMainTheme();
     }
 
     const leagueTitle = foundLeague ? `${foundLeague.name} (${foundCountryName})` : leagueId.toUpperCase();
@@ -825,9 +828,6 @@ function route() {
   } else if (hash.startsWith('#team/')) {
     const teamId = hash.replace('#team/', '');
     setTeamTheme(teamId);
-    
-    const teamHeaderEl = document.getElementById('team-name-header');
-    if (teamHeaderEl) teamHeaderEl.textContent = teamId === 'hemel' ? 'Hemel Hempstead Town FC' : teamId;
     
     renderTeamDashboard();
     document.getElementById('view-team-dashboard')?.classList.remove('hidden');
@@ -1078,52 +1078,174 @@ function resetLineHighlights() {
   highlightedLines.forEach(line => line.classList.remove('highlight-white'))
 }
 
-function renderLeagueDashboard() {
+async function renderLeagueDashboard() {
   const tableBox = document.getElementById('league-standings-table')
   if (!tableBox) return
+ 
+  //get league id
+  const hash = window.location.hash || '';
+  const leagueId = hash.replace('#league/', '');
+
+  if (leagueId !== 'nl') {
+    tableBox.innerHTML = `
+      <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+        <h3 style="margin-bottom: 0.5rem; color: var(--text-primary);">Coming Soon</h3>
+        <p>Data collection for this league currently in progress.</p>
+      </div>
+    `;
+    return;
+  }
+
+  tableBox.innerHTML = '<p style="color: #888; text-align: center; padding: 2rem;">Loading standings...</p>';
+
+  const { data: leagueTable, error } = await supabase
+    .from('v_national_league_table')
+    .select('*');
+
+  if (error) {
+    tableBox.innerHTML = `<p style="color: #ef4444;">Error loading table: ${error.message}</p>`;
+    return;
+  }
+
+  if (!leagueTable || leagueTable.length === 0) {
+    tableBox.innerHTML = '<p style="color: #888; text-align: center; padding: 2rem;">No standings data available.</p>';
+    return;
+  }
 
   tableBox.innerHTML = `
     <table style="width: 100%; text-align: left; border-collapse: collapse; color: white;">
       <thead>
         <tr style="border-bottom: 1px solid #333;">
           <th>#</th>
-          <th>Team</th>
+          <th>Club</th>
           <th>P</th>
+          <th>W</th>
+          <th>D</th>
+          <th>L</th>
+          <th>GD</th>
           <th>Pts</th>
         </tr>
       </thead>
       <tbody>
-        <tr style="border-bottom: 1px solid #222; cursor: pointer;" onclick="window.location.hash='#team/hemel'">
-          <td>1</td>
-          <td><strong>Hemel Hempstead Town</strong></td>
-          <td>12</td>
-          <td>28</td>
-        </tr>
-        <tr style="border-bottom: 1px solid #222;">
-          <td>2</td>
-          <td>St Albans City</td>
-          <td>12</td>
-          <td>25</td>
-        </tr>
-        <tr style="border-bottom: 1px solid #222;">
-          <td>3</td>
-          <td>Chelmsford City</td>
-          <td>12</td>
-          <td>22</td>
-        </tr>
+        ${leagueTable.map((team, index) => `
+          <tr style="border-bottom: 1px solid #222; cursor: pointer;" onclick="window.location.hash='#team/${team.team_id}'">
+            <td>${index + 1}</td>
+            <td style="border-left: 5px solid ${team.primary_color || '#666'}; padding-left: 8px;">
+              <strong>${team.team_name}</strong>
+            </td>
+            <td>${team.played}</td>
+            <td>${team.won}</td>
+            <td>${team.drawn}</td>
+            <td>${team.lost}</td>
+            <td>${team.gd > 0 ? '+' + team.gd : team.gd}</td>
+            <td><strong>${team.pts}</strong></td>
+          </tr>
+        `).join('')}
       </tbody>
     </table>
-  `
+  `;
 }
 
-function renderTeamDashboard() {
-  const infoBox = document.getElementById('team-recent-info')
-  if (!infoBox) return
+async function renderTeamDashboard() {
+  const hash = window.location.hash || '';
+  const teamId = hash.replace('#team/', '');
+
+  const infoBox = document.getElementById('team-recent-info');
+  const titleEl = document.getElementById('team-name-header');
+  if (!infoBox || !titleEl) return;
+
+  infoBox.innerHTML = '<p style="color: #888; text-align: center; padding: 2rem;">Loading team data...</p>';
+
+  const { data: team, error: teamError } = await supabase
+    .from('teams')
+    .select('*')
+    .eq('id', teamId)
+    .maybeSingle();
+
+  const teamName = team ? team.name : teamId;
+  titleEl.textContent = teamName;
+
+  if (team && team.primary_color) {
+    const primary = team.primary_color;
+    const secondary = team.secondary_color || '#ffffff';
+    
+    document.documentElement.style.setProperty('--ribbon-1', primary);
+    document.documentElement.style.setProperty('--ribbon-2', secondary);
+    document.documentElement.style.setProperty('--ribbon-3', primary);
+
+    titleEl.style.color = primary;
+  } else {
+    titleEl.style.color = 'var(--text-primary)';
+  }
+
+  const searchValues = [teamId];
+  if (team && team.name) searchValues.push(team.name);
+
+  const filterClause = searchValues
+    .map(v => `home_team.eq."${v}",away_team.eq."${v}"`)
+    .join(',');
+
+  const { data: matches, error: matchError } = await supabase
+    .from('matches-england-step1')
+    .select('*')
+    .or(filterClause)
+    .order('matchday', { ascending: true });
+
+  if (matchError) {
+    infoBox.innerHTML = `<p style="color: #ef4444;">Error loading matches: ${matchError.message}</p>`;
+    return;
+  }
+
+  if (!matches || matches.length === 0) {
+    infoBox.innerHTML = `
+      <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+        <p>No match records found for this team yet.</p>
+      </div>
+    `;
+    return;
+  }
 
   infoBox.innerHTML = `
-    <p style="margin-bottom: 0.5rem;"><strong>Current Position:</strong> 1st in National League South</p>
-    <p><strong>Last Match:</strong> Hemel Hempstead Town 2 - 1 St Albans City (FT)</p>
-  `
+    <div style="margin-bottom: 1.25rem;">
+      <h3 style="margin-bottom: 0.25rem; color: var(--text-primary);">Fixture Log</h3>
+      <p style="color: var(--text-muted); font-size: 0.85rem;">Matches recorded for ${teamName}:</p>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+      ${matches.map(m => {
+        // Determine if home or away by matching against either ID or Name
+        const isHome = m.home_team === teamId || m.home_team === teamName;
+        const opponent = isHome ? m.away_team : m.home_team;
+        const hasPlayed = m.fthg !== null && m.ftag !== null;
+        
+        let scoreDisplay = 'vs';
+        let resultColor = 'var(--text-muted)';
+
+        if (hasPlayed) {
+          const teamScore = isHome ? m.fthg : m.ftag;
+          const oppScore = isHome ? m.ftag : m.fthg;
+          scoreDisplay = `${m.fthg} - ${m.ftag}`;
+          
+          if (teamScore > oppScore) resultColor = '#10b981'; 
+          else if (teamScore < oppScore) resultColor = '#ef4444'; 
+          else resultColor = '#f59e0b'; 
+        }
+
+        return `
+          <div style="background: var(--bg-slate); border: 1px solid var(--border-slate); padding: 0.85rem 1.25rem; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold;">Matchday ${m.matchday}</span>
+              <div style="font-weight: 600; margin-top: 2px;">
+                ${isHome ? `<strong>${teamName}</strong> vs ${opponent}` : `${opponent} vs <strong>${teamName}</strong>`}
+              </div>
+            </div>
+            <div style="font-weight: bold; font-size: 1.1rem; color: ${resultColor};">
+              ${scoreDisplay}
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
 }
 
 window.addEventListener('hashchange', route)
@@ -1211,7 +1333,6 @@ window.filterChangelog = function(category) {
   renderFilteredChangelog();
 };
 
-// --- Modal & Editing Logic ---
 window.openChangelogModal = function() {
   document.getElementById('changelog-modal').style.display = 'block';
 };
@@ -1250,7 +1371,6 @@ window.deleteChangelogEntry = async function(id) {
   if (error) {
     alert('Failed to delete entry: ' + error.message);
   } else {
-    // Show instant undo prompt
     showUndoToast(id);
     fetchChangelog();
   }
@@ -1291,7 +1411,6 @@ window.undoDelete = async function(id) {
   }
 };
 
-// Handle Form Submission (Create or Update)
 document.getElementById('changelog-form')?.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -1327,7 +1446,6 @@ document.getElementById('changelog-form')?.addEventListener('submit', async (e) 
   }
 });
 
-// sign up
 let isSignUpMode = false;
 window.openAuthModal = function() {
   document.getElementById('auth-modal').style.display = 'block';
@@ -1338,7 +1456,6 @@ window.closeAuthModal = function() {
   document.getElementById('auth-form').reset();
   isSignUpMode = false;
   
-  // Reset modal UI back to default Log In mode
   const title = document.getElementById('auth-modal-title');
   const submitBtn = document.getElementById('auth-submit-btn');
   const toggleText = document.getElementById('auth-toggle-text');
@@ -1404,7 +1521,7 @@ document.getElementById('auth-form')?.addEventListener('submit', async (e) => {
     if (error) {
       alert('Sign up failed: ' + error.message);
     } else {
-      alert('Account created! If email confirmation is enabled in Supabase, check your inbox. Otherwise, click Log In.');
+      alert('Account created! Check your inbox if verification is required.');
       closeAuthModal();
     }
   } else {
@@ -1470,3 +1587,65 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAdminStatus();
   });
 });
+
+function generateLeagueTable(matches, teams) {
+  const table = {};
+
+  teams.forEach(team => {
+    table[team.id] = {
+      id: team.id,
+      name: team.name,
+      played: 0,
+      won: 0,
+      drawn: 0,
+      lost: 0,
+      gf: 0,
+      ga: 0,
+      gd: 0,
+      pts: 0,
+      primaryColor: team.primary_color,
+      secondaryColor: team.secondary_color
+    };
+  });
+
+  matches.forEach(m => {
+    if (m.fthg === null || m.ftag === null) return;
+
+    const home = table[m.home_team];
+    const away = table[m.away_team];
+
+    if (!home || !away) return;
+
+    home.played++;
+    away.played++;
+
+    home.gf += m.fthg;
+    home.ga += m.ftag;
+    away.gf += m.ftag;
+    away.ga += m.fthg;
+
+    if (m.fthg > m.ftag) {
+      home.won++;
+      home.pts += 3;
+      away.lost++;
+    } else if (m.fthg < m.ftag) { 
+      away.won++;
+      away.pts += 3;
+      home.lost++;
+    } else { 
+      home.drawn++;
+      home.pts += 1;
+      away.drawn++;
+      away.pts += 1;
+    }
+  });
+
+  return Object.values(table)
+    .map(t => ({ ...t, gd: t.gf - t.ga }))
+    .sort((a, b) => {
+      if (b.pts !== a.pts) return b.pts - a.pts;
+      if (b.gd !== a.gd) return b.gd - a.gd;
+      return b.gf - a.gf;
+    });
+}
+

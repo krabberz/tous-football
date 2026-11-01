@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tous</title>
   <link rel="stylesheet" href="./style.css" />
+  <script async src="https://platform.x.com/widgets.js" charset="utf-8"></script>
 </head>
 <body>
   <div class="corner-ribbon corner-ribbon-tl-1"></div>
@@ -120,7 +121,20 @@
 
     <div id="view-league-dashboard" class="view hidden">
       <h1 class="page-title"><span id="league-name-header">League</span></h1>
-      <div id="league-standings-table" class="standings-box"></div>
+      
+      <div class="league-dashboard-layout">
+        
+        <aside class="league-sidebar" id="league-social-sidebar">
+        </aside>
+
+        <div class="league-main-content">
+          <div id="league-standings-table" class="standings-box"></div>
+          
+          <div id="league-stat-leaders" class="stat-leaders-box" style="margin-top: 1.5rem;">
+          </div>
+        </div>
+
+      </div>
     </div>
 
     <div id="view-team-dashboard" class="view hidden">

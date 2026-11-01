@@ -1081,10 +1081,46 @@ function resetLineHighlights() {
 async function renderLeagueDashboard() {
   const tableBox = document.getElementById('league-standings-table')
   if (!tableBox) return
- 
-  //get league id
+
   const hash = window.location.hash || '';
   const leagueId = hash.replace('#league/', '');
+
+  const sidebarEl = document.getElementById('league-social-sidebar');
+  if (sidebarEl) {
+    const { data: compData, error: compError } = await supabase
+      .from('competitions')
+      .select('twitterpage, facebookpage') // <--- Pulls 'twitterpage' here
+      .eq('id', leagueId)
+      .maybeSingle();
+
+    console.log("League ID looking up:", leagueId);
+    console.log("Comp Data returned:", compData);
+    console.log("Comp Error returned:", compError);
+
+    if (compData) {
+      const twitterUrl = compData.twitterpage;
+      const facebookUrl = compData.facebookpage;
+
+      sidebarEl.innerHTML = `
+        <div style="background: var(--bg-slate); border: 1px solid var(--border-slate); border-radius: var(--radius-lg); padding: 1rem; margin-bottom: 1rem;">
+          <h4 style="color: var(--text-primary); font-size: 0.9rem; margin-bottom: 0.75rem;">Official X (Twitter) Feed</h4>
+          ${twitterUrl ? `
+            <a class="twitter-timeline" href="${twitterUrl}?ref_src=twsrc%5Etfw">Posts by NL_Enterprise</a> 
+          ` : '<p style="color: var(--text-muted); font-size: 0.85rem;">No Twitter feed linked.</p>'}
+        </div>
+
+        <div style="background: var(--bg-slate); border: 1px solid var(--border-slate); border-radius: var(--radius-lg); padding: 1rem;">
+          <h4 style="color: var(--text-primary); font-size: 0.9rem; margin-bottom: 0.75rem;">Official Facebook</h4>
+          ${facebookUrl ? `<a href="${facebookUrl}" target="_blank" style="color: var(--accent-color); font-size: 0.85rem; word-break: break-all;">View Facebook Page &rarr;</a>` : '<p style="color: var(--text-muted); font-size: 0.85rem;">No Facebook page linked.</p>'}
+        </div>
+      `;
+
+      // Trigger Twitter widget script to parse the newly injected anchor tag
+      if (window.twttr && window.twttr.widgets) {
+        window.twttr.widgets.load(sidebarEl);
+      }
+    }
+  }
 
   if (leagueId !== 'nl') {
     tableBox.innerHTML = `
@@ -1212,7 +1248,6 @@ async function renderTeamDashboard() {
     </div>
     <div style="display: flex; flex-direction: column; gap: 0.75rem;">
       ${matches.map(m => {
-        // Determine if home or away by matching against either ID or Name
         const isHome = m.home_team === teamId || m.home_team === teamName;
         const opponent = isHome ? m.away_team : m.home_team;
         const hasPlayed = m.fthg !== null && m.ftag !== null;
@@ -1648,4 +1683,3 @@ function generateLeagueTable(matches, teams) {
       return b.gf - a.gf;
     });
 }
-

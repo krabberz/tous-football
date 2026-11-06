@@ -793,22 +793,35 @@ function route() {
     document.getElementById('view-leagues')?.classList.remove('hidden');
 
   } else if (hash.startsWith('#league/')) {
-    const leagueId = hash.replace('#league/', '');
+    // New format: #league/england/nl (Parts: [countryId, leagueId])
+    // Fallback support if old format: #league/nl
+    const parts = hash.replace('#league/', '').split('/');
+    const countryId = parts.length > 1 ? parts[0] : '';
+    const leagueId = parts.length > 1 ? parts[1] : parts[0];
     
     let foundLeague = null;
-    let foundCountryId = '';
+    let foundCountryId = countryId;
     let foundCountryName = '';
 
-    for (const [countryId, countryData] of Object.entries(LEAGUES_BY_COUNTRY)) {
-      const allLeaguesInCountry = Object.values(countryData).flat();
-      const match = allLeaguesInCountry.find(l => l.id === leagueId);
+    if (countryId && LEAGUES_BY_COUNTRY[countryId]) {
+      const countryObj = COUNTRIES.find(c => c.id === countryId);
+      foundCountryName = countryObj ? countryObj.name : countryId;
+      
+      const allLeaguesInCountry = Object.values(LEAGUES_BY_COUNTRY[countryId]).flat();
+      foundLeague = allLeaguesInCountry.find(l => l.id === leagueId);
+    } else {
+      // Fallback search if country wasn't provided in the hash
+      for (const [cId, countryData] of Object.entries(LEAGUES_BY_COUNTRY)) {
+        const allLeaguesInCountry = Object.values(countryData).flat();
+        const match = allLeaguesInCountry.find(l => l.id === leagueId);
 
-      if (match) {
-        foundLeague = match;
-        foundCountryId = countryId;
-        const countryObj = COUNTRIES.find(c => c.id === countryId);
-        foundCountryName = countryObj ? countryObj.name : countryId;
-        break;
+        if (match) {
+          foundLeague = match;
+          foundCountryId = cId;
+          const countryObj = COUNTRIES.find(c => c.id === cId);
+          foundCountryName = countryObj ? countryObj.name : cId;
+          break;
+        }
       }
     }
 
@@ -826,8 +839,16 @@ function route() {
     document.getElementById('view-league-dashboard')?.classList.remove('hidden');
 
   } else if (hash.startsWith('#team/')) {
-    const teamId = hash.replace('#team/', '');
-    setTeamTheme(teamId);
+    // New format: #team/england/teamId (Parts: [countryId, teamId])
+    const parts = hash.replace('#team/', '').split('/');
+    const countryId = parts.length > 1 ? parts[0] : '';
+    const teamId = parts.length > 1 ? parts[1] : parts[0];
+
+    if (countryId) {
+      setCountryTheme(countryId);
+    } else {
+      setMainTheme();
+    }
     
     renderTeamDashboard();
     document.getElementById('view-team-dashboard')?.classList.remove('hidden');
@@ -953,7 +974,7 @@ function renderLeagues(countryId) {
             ${leagues.map(l => {
               if (l.isFeederLink) {
                 return `
-                  <div class="league-card feeder-card" id="league-${l.id}" data-promotes-to="${(l.promotesTo || []).join(',')}" onclick="window.location.hash='#feeders/${l.id}'">
+                  <div class="league-card feeder-card" id="league-${l.id}" data-promotes-to="${(l.promotesTo || []).join(',')}" onclick="window.location.hash='#feeders/${countryId}/${l.id}'">
                     <div class="league-card-title">${l.name}</div>
                     <div class="feeder-badge">View Sub-Divisions &rarr;</div>
                   </div>
@@ -961,10 +982,11 @@ function renderLeagues(countryId) {
               }
 
               return `
-                <div class="league-card" id="league-${l.id}" data-promotes-to="${(l.promotesTo || []).join(',')}" onclick="window.location.hash='#league/${l.id}'">
+                <div class="league-card" id="league-${l.id}" data-promotes-to="${(l.promotesTo || []).join(',')}" onclick="window.location.hash='#league/${countryId}/${l.id}'">
                   <div class="league-card-title">${l.name}</div>
                 </div>
               `
+
             }).join('')}
           </div>
         </div>
@@ -1081,31 +1103,31 @@ function resetLineHighlights() {
 async function renderLeagueDashboard() {
   const tableBox = document.getElementById('league-standings-table')
   if (!tableBox) return
-
+ 
   const hash = window.location.hash || '';
-  const leagueId = hash.replace('#league/', '');
+  // Split the hash correctly: #league/england/nl -> parts = ['england', 'nl']
+  const parts = hash.replace('#league/', '').split('/');
+  const countryId = parts.length > 1 ? parts[0] : '';
+  const leagueId = parts.length > 1 ? parts[1] : parts[0];
 
   const sidebarEl = document.getElementById('league-social-sidebar');
   if (sidebarEl) {
     const { data: compData, error: compError } = await supabase
       .from('competitions')
-      .select('twitterpage, facebookpage') // <--- Pulls 'twitterpage' here
+      .select('twitterpage, facebookpage')
       .eq('id', leagueId)
       .maybeSingle();
 
-    console.log("League ID looking up:", leagueId);
-    console.log("Comp Data returned:", compData);
-    console.log("Comp Error returned:", compError);
-
     if (compData) {
-      const twitterUrl = compData.twitterpage;
+      const twitterUrl = compData.twitterpage; 
       const facebookUrl = compData.facebookpage;
 
       sidebarEl.innerHTML = `
         <div style="background: var(--bg-slate); border: 1px solid var(--border-slate); border-radius: var(--radius-lg); padding: 1rem; margin-bottom: 1rem;">
           <h4 style="color: var(--text-primary); font-size: 0.9rem; margin-bottom: 0.75rem;">Official X (Twitter) Feed</h4>
           ${twitterUrl ? `
-            <a class="twitter-timeline" href="${twitterUrl}?ref_src=twsrc%5Etfw">Posts by NL_Enterprise</a> 
+            <a class="twitter-timeline" href="${twitterUrl}">Posts by NL_Enterprise</a> 
+            <script async src="https://platform.x.com/widgets.js" charset="utf-8"></script>
           ` : '<p style="color: var(--text-muted); font-size: 0.85rem;">No Twitter feed linked.</p>'}
         </div>
 
@@ -1115,7 +1137,6 @@ async function renderLeagueDashboard() {
         </div>
       `;
 
-      // Trigger Twitter widget script to parse the newly injected anchor tag
       if (window.twttr && window.twttr.widgets) {
         window.twttr.widgets.load(sidebarEl);
       }
@@ -1164,7 +1185,7 @@ async function renderLeagueDashboard() {
       </thead>
       <tbody>
         ${leagueTable.map((team, index) => `
-          <tr style="border-bottom: 1px solid #222; cursor: pointer;" onclick="window.location.hash='#team/${team.team_id}'">
+          <tr style="border-bottom: 1px solid #222; cursor: pointer;" onclick="window.location.hash='#team/${countryId}/${team.team_id}'">
             <td>${index + 1}</td>
             <td style="border-left: 5px solid ${team.primary_color || '#666'}; padding-left: 8px;">
               <strong>${team.team_name}</strong>
@@ -1184,7 +1205,9 @@ async function renderLeagueDashboard() {
 
 async function renderTeamDashboard() {
   const hash = window.location.hash || '';
-  const teamId = hash.replace('#team/', '');
+  const parts = hash.replace('#team/', '').split('/');
+  const countryId = parts.length > 1 ? parts[0] : '';
+  const teamId = parts.length > 1 ? parts[1] : parts[0];
 
   const infoBox = document.getElementById('team-recent-info');
   const titleEl = document.getElementById('team-name-header');
